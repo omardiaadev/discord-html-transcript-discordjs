@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-    <a href="https://github.com/omardiaadev/discord-html-transcript-discordjs/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/omardiaadev/discord-html-transcript-discordjs?label=License&color=0055D2"></a>
+    <a href="https://github.com/omardiaadev/discordjs-transcript/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/omardiaadev/discordjs-transcript?label=License&color=05122A"></a>
     <a href="https://discord.gg/fWtQjEJgWX"><img alt="Discord" src="https://img.shields.io/badge/Discord-5865F2?logo=discord&logoColor=FFF&color=5865F2"></a>
 </p>
 

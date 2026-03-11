@@ -1,4 +1,4 @@
-<h1 align="center">discordjs-transcript</h1>
+<h1 align="center">discord-html-transcript-discordjs</h1>
 
 <p align="center">
     <strong>Generate natively styled logs for your Discord chats using discord.js</strong>
@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-    <a href="https://github.com/omardiaadev/discordjs-transcript/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/omardiaadev/discordjs-transcript?label=License&labelColor=05122A&color=05122A"></a>
+    <a href="https://github.com/omardiaadev/discord-html-transcript-discordjs/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/omardiaadev/discord-html-transcript-discordjs?label=License&labelColor=05122A&color=05122A"></a>
     <a href="https://discord.gg/fWtQjEJgWX"><img alt="Discord" src="https://img.shields.io/badge/Discord-5865F2?logo=discord&logoColor=FFF&color=5865F2"></a>
 </p>
 
@@ -110,7 +110,7 @@ following [intents](https://discordjs.guide/legacy/popular-topics/intents#enabli
 
 ```typescript
 import {Client, Events, GatewayIntentBits} from 'discord.js';
-import TranscriberClient from 'discordjs-transcript';
+import TranscriberClient from 'discord-html-transcript-discordjs';
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.MessageContent],

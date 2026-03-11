@@ -1,5 +1,5 @@
 {
-  "name": "discordjs-transcript",
+  "name": "discord-html-transcript-discordjs",
   "version": "0.1.0-beta.1",
   "description": "Generate natively styled logs for your Discord chats using discord.js",
   "keywords": [
@@ -7,9 +7,9 @@
     "discordjs",
     "discord-transcripts"
   ],
-  "homepage": "https://github.com/omardiaadev/discordjs-transcript",
+  "homepage": "https://github.com/omardiaadev/discord-html-transcript-discordjs",
   "bugs": {
-    "url": "https://github.com/omardiaadev/discordjs-transcript/issues"
+    "url": "https://github.com/omardiaadev/discord-html-transcript-discordjs/issues"
   },
   "license": "Apache-2.0",
   "author": "Omar Diaa <contact@omardiaa.dev> (https://github.com/omardiaadev)",
@@ -18,7 +18,7 @@
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/omardiaadev/discordjs-transcript.git"
+    "url": "git+https://github.com/omardiaadev/discord-html-transcript-discordjs.git"
   },
   "scripts": {
     "clean": "rimraf dist",

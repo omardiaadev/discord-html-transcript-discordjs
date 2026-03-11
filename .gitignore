@@ -1,0 +1,9 @@
+# Secret
+.env
+
+# Development Environment
+node_modules
+dist
+bin
+.idea
+src/dev

@@ -1,0 +1,9 @@
+{
+  "semi": true,
+  "useTabs": false,
+  "endOfLine": "lf",
+  "printWidth": 120,
+  "singleQuote": true,
+  "trailingComma": "es5",
+  "plugins": ["prettier-plugin-jsdoc"]
+}

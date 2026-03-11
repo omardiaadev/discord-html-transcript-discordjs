@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-    <a href="https://github.com/omardiaadev/discordjs-transcript/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/omardiaadev/discordjs-transcript?label=License&color=05122A"></a>
+    <a href="https://github.com/omardiaadev/discordjs-transcript/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/omardiaadev/discordjs-transcript?label=License&labelColor=05122A&color=05122A"></a>
     <a href="https://discord.gg/fWtQjEJgWX"><img alt="Discord" src="https://img.shields.io/badge/Discord-5865F2?logo=discord&logoColor=FFF&color=5865F2"></a>
 </p>
 
@@ -19,6 +19,7 @@
         <li><a href="#getting-started">Getting Started</a></li>
         <li><a href="#usage">Usage</a></li>
         <li><a href="#development">Development</a></li>
+        <li><a href="#support">Support</a></li>
     </ul>
 </details>
 

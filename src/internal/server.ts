@@ -15,19 +15,18 @@
  */
 
 import { ChildProcess, spawn } from 'node:child_process';
+import { SERVER_CONFIG } from '../config.js';
 import { validateServer } from '../util/server-util.js';
-import { SERVER_CONFIG } from '../config/server-config.js';
+import { TranscriberPayload } from '../model/transcriber-payload.js';
+import { ServerErrorPayload } from '../model/server-error-payload.js';
 import {
   ServerAuthenticationError,
   ServerConnectionError,
   ServerMismatchedInputError,
   ServerMismatchedVersionError,
-} from '../errors/server-error.js';
-import Payload from '../types/payload.js';
-import ServerErrorPayload from '../types/server-error-payload.js';
+} from '../error/server-error.js';
 
-/** A singleton class for handling the Transcriber web server. */
-export default class Server {
+export class Server {
   private static readonly INSTANCE: Server = new Server();
 
   private readonly host: string;
@@ -46,6 +45,7 @@ export default class Server {
     if (!SERVER_CONFIG.env.externalUrl) {
       process.on('exit', this.stop);
       process.on('SIGINT', this.stop);
+      process.on('SIGKILL', this.stop);
     }
   }
 
@@ -103,10 +103,10 @@ export default class Server {
    * `POST /transcript` Endpoint.\
    * Generates a transcript by sending the payload.
    *
-   * @param payload The transcript {@linkcode Payload}.
+   * @param payload The transcript {@linkcode TranscriberPayload}.
    * @returns A promise of {@linkcode Response}.
    */
-  public async fetchTranscript(payload: Payload): Promise<Response> {
+  public async fetchTranscript(payload: TranscriberPayload): Promise<Response> {
     return await this.request('/transcript', {
       method: 'POST',
       body: JSON.stringify(payload),
@@ -122,7 +122,7 @@ export default class Server {
   }
 
   /**
-   * HTTP request wrapper for the web server's requests.
+   * HTTP request wrapper for the transcriber web server.
    *
    * @param endpoint The endpoint to request.
    * @param init The request options.

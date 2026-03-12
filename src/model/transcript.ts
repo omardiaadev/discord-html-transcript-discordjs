@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { AttachmentBuilder } from 'discord.js';
 import { writeFile } from 'node:fs/promises';
+import { AttachmentBuilder } from 'discord.js';
 
 /** Represents the generated HTML file as a byte output, provides utility functions. */
-export default class Transcript {
+export class Transcript {
   private readonly output;
 
   constructor(output: Uint8Array<ArrayBuffer>) {

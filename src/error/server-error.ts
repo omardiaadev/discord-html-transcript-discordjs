@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { SERVER_CONFIG } from '../config/server-config.js';
-import ServerErrorPayload from '../types/server-error-payload.js';
+import { SERVER_CONFIG } from '../config.js';
+import { ServerErrorPayload } from '../model/server-error-payload.js';
 
 class ServerError extends Error {
   constructor(message: string) {

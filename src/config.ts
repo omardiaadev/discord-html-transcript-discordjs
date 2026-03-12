@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import { PACKAGE_ROOT_DIR } from '../util/util.js';
-import { join } from 'node:path';
-import packageData from '../../package.json' with { type: 'json' };
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import packageData from '../package.json' with { type: 'json' };
+
+const BIN_DIR = join(dirname(fileURLToPath(import.meta.url)), '../bin');
 
 export const SERVER_CONFIG = {
-  dir: join(PACKAGE_ROOT_DIR, 'bin'),
-  path: join(PACKAGE_ROOT_DIR, 'bin', `server${process.platform === 'win32' ? '.exe' : ''}`),
+  dir: BIN_DIR,
+  path: join(BIN_DIR, `server${process.platform === 'win32' ? '.exe' : ''}`),
   version: packageData.server.version,
   env: {
     host: process.env.TRANSCRIPT_SERVER_HOST?.trim() || '127.0.0.1',

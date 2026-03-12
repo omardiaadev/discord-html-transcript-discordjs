@@ -16,8 +16,8 @@
 
 import { APIGuild, APIGuildTextChannel, APIMessage, Client, GuildTextChannelType, Routes, Snowflake } from 'discord.js';
 
-/** Fetches the required {@link Payload} using the provided discord.js instance. */
-export default class TranscriberClientFetcher {
+/** Fetches the required {@linkcode TranscriberPayload} using the provided discord.js instance. */
+export class TranscriberClientFetcher {
   private readonly client: Client;
 
   constructor(client: Client) {

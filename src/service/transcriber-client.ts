@@ -22,10 +22,10 @@ import {
   PermissionFlagsBits,
   PermissionsBitField,
 } from 'discord.js';
-import TranscriberClientFetcher from './internal/transcriber-client-fetcher.js';
-import Transcript from './model/transcript.js';
-import Server from './internal/server.js';
-import { InvalidChannelTypeError, MissingIntentsError, MissingPermissionsError } from './errors/transcriber-error.js';
+import {TranscriberClientFetcher} from '../internal/transcriber-client-fetcher.js';
+import {Transcript} from '../model/transcript.js';
+import {Server} from '../internal/server.js';
+import {InvalidChannelTypeError, MissingIntentsError, MissingPermissionsError} from '../error/transcriber-error.js';
 
 /**
  * Generates HTML Discord channel transcripts.
@@ -34,7 +34,7 @@ import { InvalidChannelTypeError, MissingIntentsError, MissingPermissionsError }
  *   const transcriber = new TranscriberClient(client); // Instantiate once
  *   const transcript = await transcriber.transcribe(channel);
  */
-export default class TranscriberClient {
+export class TranscriberClient {
   public static readonly REQUIRED_INTENTS = new IntentsBitField(
     GatewayIntentBits.Guilds | GatewayIntentBits.GuildMembers | GatewayIntentBits.MessageContent
   );

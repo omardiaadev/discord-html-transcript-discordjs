@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-import { APIGuild, APIGuildTextChannel, APIMessage, GuildTextChannelType } from 'discord.js';
-
-/** An interface for defining what the Transcriber server expects. */
-export default interface Payload {
-  guild: APIGuild;
-  channel: APIGuildTextChannel<GuildTextChannelType>;
-  messages: APIMessage[];
+export interface ServerErrorPayload {
+  status: number;
+  message: string;
+  details?: Record<string, string>;
 }

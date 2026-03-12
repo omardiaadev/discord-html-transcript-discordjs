@@ -17,8 +17,8 @@
 import { mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { Client, Events } from 'discord.js';
-import TranscriberClient from './transcriber-client.js';
-import Server from './internal/server.js';
+import { TranscriberClient } from './transcriber-client.js';
+import { Server } from '../internal/server.js';
 
 const client = new Client({ intents: TranscriberClient.REQUIRED_INTENTS });
 const transcriber = new TranscriberClient(client);

@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import { SERVER_CONFIG } from '../config/server-config.js';
-import constants from 'node:constants';
-import { accessSync, chmodSync, mkdirSync } from 'node:fs';
+import { accessSync, chmodSync, constants, mkdirSync } from 'node:fs';
+import { SERVER_CONFIG } from '../config.js';
 
 /**
  * Validates the server's executable path and permissions.

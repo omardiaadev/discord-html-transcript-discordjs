@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-import { checkServerDir, validateServer } from '../util/server-util.js';
-import { SERVER_CONFIG } from '../config/server-config.js';
-import constants from 'node:constants';
-import { accessSync, writeFileSync } from 'node:fs';
+import {accessSync, constants, writeFileSync} from 'node:fs';
+import {checkServerDir, validateServer} from '../src/util/server-util.js';
+import {SERVER_CONFIG} from '../src/config.js';
 
-await downloadServer();
+downloadServer().catch((err) => {
+  console.error('Fatal error during server download:', err);
+  process.exit(1);
+});
 
 /**
  * Downloads the transcriber web server from GitHub Releases.

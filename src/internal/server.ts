@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import { ChildProcess, spawn } from 'node:child_process';
-import { SERVER_CONFIG } from '../config.js';
-import { validateServer } from '../util/server-util.js';
-import { TranscriberPayload } from '../model/transcriber-payload.js';
-import { ServerErrorPayload } from '../model/server-error-payload.js';
+import {ChildProcess, spawn} from 'node:child_process';
+import {ServerErrorPayload, TranscriberPayload} from '../types.js';
+import {validateServer} from '../util/server-util.js';
+import {SERVER_CONFIG} from '../config.js';
 import {
   ServerAuthenticationError,
   ServerConnectionError,
@@ -26,6 +25,7 @@ import {
   ServerMismatchedVersionError,
 } from '../error/server-error.js';
 
+/** Represents a singleton for handling the transcriber web server. */
 export class Server {
   private static readonly INSTANCE: Server = new Server();
 
@@ -45,7 +45,6 @@ export class Server {
     if (!SERVER_CONFIG.env.externalUrl) {
       process.on('exit', this.stop);
       process.on('SIGINT', this.stop);
-      process.on('SIGKILL', this.stop);
     }
   }
 

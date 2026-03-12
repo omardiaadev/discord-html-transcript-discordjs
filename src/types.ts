@@ -14,8 +14,16 @@
  * limitations under the License.
  */
 
-export interface ServerErrorPayload {
+import { APIGuild, APIGuildTextChannel, APIMessage, GuildTextChannelType } from 'discord.js';
+
+export type TranscriberPayload = {
+  guild: APIGuild;
+  channel: APIGuildTextChannel<GuildTextChannelType>;
+  messages: APIMessage[];
+};
+
+export type ServerErrorPayload = {
   status: number;
   message: string;
   details?: Record<string, string>;
-}
+};

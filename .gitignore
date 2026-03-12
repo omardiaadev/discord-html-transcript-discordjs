@@ -3,7 +3,8 @@
 
 # Development Environment
 node_modules
-dist
 bin
+dist
+playground
 .idea
-src/dev
+*.tgz

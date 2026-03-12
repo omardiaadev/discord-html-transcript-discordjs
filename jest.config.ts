@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import { type JestConfigWithTsJest } from 'ts-jest';
+import { createDefaultEsmPreset, type JestConfigWithTsJest } from 'ts-jest';
 
-/** @see https://jestjs.io/docs/configuration */
 const jestConfig: JestConfigWithTsJest = {
-  preset: 'ts-jest/presets/default-esm',
+  ...createDefaultEsmPreset(),
   moduleNameMapper: {
     '^(\\.{1,2}/.*)\\.js$': '$1',
   },

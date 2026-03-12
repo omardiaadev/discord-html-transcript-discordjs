@@ -7,7 +7,6 @@
 
     "types": ["node", "jest"],
 
-    "rootDir": "./src",
     "outDir": "./dist",
 
     "isolatedModules": true,
@@ -15,6 +14,6 @@
     "declarationMap": true,
     "sourceMap": true
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "scripts/**/*"],
   "exclude": ["node_modules", "dist", "src/dev"]
 }

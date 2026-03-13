@@ -1,10 +1,12 @@
-# Secret
-.env
+# Node.js
+/node_modules/
+/dist/
 
-# Development Environment
-node_modules
-bin
-dist
-playground
-.idea
+# IntelliJ IDEA
+/.idea/
+
+# Misc
+/bin/
+/playground/
+.env
 *.tgz

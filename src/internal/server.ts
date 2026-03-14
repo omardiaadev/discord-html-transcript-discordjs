@@ -14,66 +14,74 @@
  * limitations under the License.
  */
 
-import {ChildProcess, spawn} from 'node:child_process';
-import {ServerErrorPayload, TranscriberPayload} from '../types.js';
-import {validateServer} from '../util/server-util.js';
-import {SERVER_CONFIG} from '../config.js';
+import { ChildProcess, spawn } from 'node:child_process';
+import { SERVER_CONFIG } from '../config.js';
 import {
   ServerAuthenticationError,
   ServerConnectionError,
   ServerMismatchedInputError,
   ServerMismatchedVersionError,
 } from '../error/server-error.js';
+import { ServerErrorPayload, TranscriberPayload } from '../types.js';
+import { validateServer } from '../util/server-util.js';
 
-/** Represents a singleton for handling the transcriber web server. */
+enum Status {
+  Started,
+  Starting,
+  Stopped,
+}
+
+export type ServerOptions = {
+  /** The local host to bind to (default: '127.0.0.1'). */
+  host?: string;
+  /** The port on which the local server will listen (default: 7000). */
+  port?: number;
+  /** An optional API key for authenticating with the server. */
+  apiKey?: string;
+  /** An existing external server URL to connect to, bypassing local server creation. */
+  externalUrl?: string;
+};
+
+/** Represents the transcriber server, managing its configuration, lifecycle, and HTTP requests. */
 export class Server {
-  private static readonly INSTANCE: Server = new Server();
-
   private readonly host: string;
   private readonly port: number;
   private readonly url: string;
-  public readonly ready: Promise<void>;
+  private readonly apiKey: string | undefined;
+  private readonly isExternal: boolean;
 
+  private status: Status = Status.Stopped;
   private process: ChildProcess | null = null;
 
-  private constructor() {
-    this.host = SERVER_CONFIG.env.host;
-    this.port = SERVER_CONFIG.env.port;
-    this.url = SERVER_CONFIG.env.externalUrl || `http://${this.host}:${this.port}`;
-    this.ready = this.start();
+  constructor(options: ServerOptions = {}) {
+    this.host = options.host?.trim() ?? '127.0.0.1';
+    this.port = options.port ?? 7000;
+    this.url = options.externalUrl ?? `http://${this.host}:${this.port}`;
+    this.apiKey = options.apiKey;
+    this.isExternal = options.externalUrl !== undefined;
 
-    if (!SERVER_CONFIG.env.externalUrl) {
-      process.on('exit', this.stop);
-      process.on('SIGINT', this.stop);
+    if (!this.isExternal) {
+      validateServer();
+      process.on('exit', () => this.stop());
     }
   }
 
-  /** @returns The {@linkcode Server} singleton instance. */
-  public static getInstance(): Server {
-    return Server.INSTANCE;
-  }
-
   /**
-   * Starts the server and waits for the HTTP server to initialize.
+   * Starts the server and waits for the HTTP interface to initialize.
    *
-   * If `TRANSCRIPT_SERVER_URL` is undefined, the method attempts to start a local server with the specified
-   * {@linkcode host} and {@linkcode port}.
+   * If an `externalUrl` was provided in the initialization options, this method will attempt to connect to that
+   * external server. Otherwise, it spawns a local server process using The configured `host` and `port`.
    *
-   * If `TRANSCRIPT_SERVER_URL` is set, the method attempts to connect to the external server with the specified
-   * {@linkcode url}.
+   * @returns A promise that resolves when the server is ready for requests.
+   * @throws ServerConnectionError If the server fails to start or cannot be reached.
    */
   public async start(): Promise<void> {
-    if (SERVER_CONFIG.env.externalUrl) {
-      console.log(`Connecting to external server: ${this.url}`);
+    this.status = Status.Starting;
+
+    if (this.isExternal) {
+      console.log(`Connecting to external transcriber server: ${this.url}`);
     } else {
-      if (this.process) {
-        console.log('Server already started.');
-        return;
-      }
-
-      console.log(`Starting local server...`);
-
-      validateServer();
+      console.log(`Starting local transcriber server...`);
 
       this.process = spawn(SERVER_CONFIG.path, {
         stdio: 'inherit',
@@ -85,28 +93,59 @@ export class Server {
       });
     }
 
-    await this.fetchHealth();
-    console.log(`Server started: ${this.url}`);
-  }
-
-  /** Gracefully shuts down the server. */
-  public stop(): void {
-    if (this.process) {
-      console.log('Shutting down server...');
-      this.process.kill();
-      this.process = null;
+    try {
+      await this.checkReady();
+      this.status = Status.Started;
+      console.log(`Transcriber server started: ${this.url}`);
+    } catch (err) {
+      this.stop();
+      throw new ServerConnectionError(this.url);
     }
   }
 
   /**
+   * Polls the server's `GET /health` endpoint to verify its readiness.
+   *
+   * @param maxAttempts The maximum number of connection attempts before failing.
+   * @param intervalMs The delay in milliseconds between each connection attempt.
+   */
+  private async checkReady(maxAttempts = 20, intervalMs = 500): Promise<void> {
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        await this.fetchHealth();
+        return;
+      } catch (err) {
+        if (attempt === maxAttempts) throw err;
+        await new Promise((resolve) => setTimeout(resolve, intervalMs));
+      }
+    }
+  }
+
+  /** Gracefully shuts down the local server. */
+  public stop(): void {
+    if (this.process) {
+      console.log('Shutting down transcriber server...');
+      this.process.kill();
+      this.process = null;
+    }
+
+    this.status = Status.Stopped;
+  }
+
+  /** @returns `true` if the server is ready to accept requests, otherwise `false`. */
+  public isReady(): boolean {
+    return this.status === Status.Started;
+  }
+
+  /**
    * `POST /transcript` Endpoint.\
-   * Generates a transcript by sending the payload.
+   * Generates a transcript by sending the provided payload to the server.
    *
    * @param payload The transcript {@linkcode TranscriberPayload}.
-   * @returns A promise of {@linkcode Response}.
+   * @returns A promise resolving to the request's {@linkcode Response}.
    */
   public async fetchTranscript(payload: TranscriberPayload): Promise<Response> {
-    return await this.request('/transcript', {
+    return this.request('/transcript', {
       method: 'POST',
       body: JSON.stringify(payload),
     });
@@ -115,17 +154,20 @@ export class Server {
   /**
    * `GET /health` Endpoint.\
    * Retrieves basic server information.
+   *
+   * @returns A promise resolving to the request's {@linkcode Response}.
    */
   private async fetchHealth(): Promise<Response> {
-    return await this.request('/health', { method: 'GET' });
+    return this.request('/health', { method: 'GET' });
   }
 
   /**
-   * HTTP request wrapper for the transcriber web server.
+   * An internal wrapper for making HTTP requests to the transcriber server.\
+   * Automatically appends required headers and parses common server errors into custom typed exceptions.
    *
-   * @param endpoint The endpoint to request.
+   * @param endpoint The request path (e.g. `/transcript`).
    * @param init The request options.
-   * @returns A promise of {@linkcode Response}.
+   * @returns A promise resolving to the request's {@linkcode Response}.
    */
   private async request(endpoint: string, init?: RequestInit): Promise<Response> {
     const url = new URL(endpoint, this.url);
@@ -134,10 +176,20 @@ export class Server {
     headers.set('Server-Version', SERVER_CONFIG.version);
     headers.set('Content-Type', 'application/json');
 
+    if (this.apiKey) {
+      headers.set('Authorization', `Bearer ${this.apiKey}`);
+    }
+
     const response = await fetch(url, { ...init, headers });
 
     if (!response.ok) {
-      const error = (await response.json()) as ServerErrorPayload;
+      let error: ServerErrorPayload | undefined;
+
+      try {
+        error = (await response.json()) as ServerErrorPayload;
+      } catch {
+        throw new ServerConnectionError(this.url);
+      }
 
       switch (response.status) {
         case 400:

@@ -14,18 +14,12 @@
  * limitations under the License.
  */
 
-import {
-  Client,
-  GatewayIntentBits,
-  GuildTextBasedChannel,
-  IntentsBitField,
-  PermissionFlagsBits,
-  PermissionsBitField,
-} from 'discord.js';
-import {TranscriberClientFetcher} from '../internal/transcriber-client-fetcher.js';
-import {Transcript} from '../model/transcript.js';
-import {Server} from '../internal/server.js';
-import {InvalidChannelTypeError, MissingIntentsError, MissingPermissionsError} from '../error/transcriber-error.js';
+import { Client, GuildTextBasedChannel } from 'discord.js';
+import { TranscriberClientFetcher } from '../internal/transcriber-client-fetcher.js';
+import { Transcript } from '../model/transcript.js';
+import { Server, ServerOptions } from '../internal/server.js';
+import { InvalidChannelTypeError, MissingIntentsError, MissingPermissionsError } from '../error/transcriber-error.js';
+import { REQUIRED_INTENTS, REQUIRED_PERMISSIONS } from '../config.js';
 
 /**
  * Generates HTML Discord channel transcripts.
@@ -35,13 +29,6 @@ import {InvalidChannelTypeError, MissingIntentsError, MissingPermissionsError} f
  *   const transcript = await transcriber.transcribe(channel);
  */
 export class TranscriberClient {
-  public static readonly REQUIRED_INTENTS = new IntentsBitField(
-    GatewayIntentBits.Guilds | GatewayIntentBits.GuildMembers | GatewayIntentBits.MessageContent
-  );
-  public static readonly REQUIRED_PERMISSIONS = new PermissionsBitField(
-    PermissionFlagsBits.ViewChannel | PermissionFlagsBits.ReadMessageHistory
-  );
-
   private readonly server: Server;
   private readonly transcriberFetcher: TranscriberClientFetcher;
 
@@ -49,17 +36,28 @@ export class TranscriberClient {
    * Creates a new instance of {@linkcode TranscriberClient}.
    *
    * @param client The discord.js client instance.
+   * @param serverOptions The options used to initialize the {@linkcode Server}.
    * @throws MissingIntentsError If the provided {@linkcode client} instance is missing any of
    *   {@linkcode REQUIRED_INTENTS}.
    */
-  constructor(client: Client) {
-    if (!client.options.intents.has(TranscriberClient.REQUIRED_INTENTS)) {
-      const missingIntents = client.options.intents.missing(TranscriberClient.REQUIRED_INTENTS);
+  constructor(client: Client, serverOptions?: ServerOptions) {
+    if (!client.options.intents.has(REQUIRED_INTENTS)) {
+      const missingIntents = client.options.intents.missing(REQUIRED_INTENTS);
       throw new MissingIntentsError(missingIntents);
     }
 
-    this.server = Server.getInstance();
+    this.server = new Server(serverOptions);
     this.transcriberFetcher = new TranscriberClientFetcher(client);
+  }
+
+  /** Starts the server and waits for it to initialize. */
+  public async start(): Promise<void> {
+    await this.server.start();
+  }
+
+  /** Gracefully shuts down the server. */
+  public stop(): void {
+    this.server.stop();
   }
 
   /**
@@ -70,7 +68,10 @@ export class TranscriberClient {
    * @throws Error If the provided {@linkcode client} instance lacks permissions, or the transcript web server fails.
    */
   public async transcribe(guildChannel: GuildTextBasedChannel): Promise<Transcript> {
-    await this.server.ready;
+    if (!this.server.isReady()) {
+      throw new Error('TranscriberClient is not initialized. Did you forget to call "await transcriber.start()"?');
+    }
+
     await this.validateChannel(guildChannel);
 
     const [guild, channel, messages] = await Promise.all([
@@ -107,8 +108,8 @@ export class TranscriberClient {
 
     const member = channel.guild.members.me ?? (await channel.guild.members.fetchMe());
 
-    if (!member.permissionsIn(channel).has(TranscriberClient.REQUIRED_PERMISSIONS)) {
-      const missingPermissions = member.permissionsIn(channel).missing(TranscriberClient.REQUIRED_PERMISSIONS);
+    if (!member.permissionsIn(channel).has(REQUIRED_PERMISSIONS)) {
+      const missingPermissions = member.permissionsIn(channel).missing(REQUIRED_PERMISSIONS);
       throw new MissingPermissionsError(missingPermissions, channel);
     }
   }

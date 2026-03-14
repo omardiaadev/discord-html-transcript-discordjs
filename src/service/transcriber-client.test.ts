@@ -18,9 +18,9 @@ import { mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { Client, Events } from 'discord.js';
 import { TranscriberClient } from './transcriber-client.js';
-import { Server } from '../internal/server.js';
+import { REQUIRED_INTENTS } from '../config.js';
 
-const client = new Client({ intents: TranscriberClient.REQUIRED_INTENTS });
+const client = new Client({ intents: REQUIRED_INTENTS });
 const transcriber = new TranscriberClient(client);
 
 beforeAll(async () => {
@@ -39,19 +39,21 @@ beforeAll(async () => {
       throw new Error('[Bot] Failed to login.', { cause: err });
     });
 
+  await transcriber.start();
+
   client.once(Events.ClientReady, (readyClient) => console.log(`[Bot] Logged in as ${readyClient.user.tag}.`));
 }, 30000);
 
 afterAll(async () => {
   await client.destroy();
-  Server.getInstance().stop();
+  transcriber.stop();
 });
 
 test('shouldCreateTranscript', async () => {
   const channel = await client.channels.fetch(process.env.DISCORD_CHANNEL_ID as string, { force: true });
 
   if (!channel || !channel.isTextBased() || channel.isDMBased()) {
-    throw new Error('Channel of DISCORD_CHANNEL_ID is not a TextChannel or does not exist.');
+    throw new Error('Channel specified by DISCORD_CHANNEL_ID is not a TextChannel or does not exist.');
   }
 
   const transcript = await transcriber.transcribe(channel);

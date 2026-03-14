@@ -25,7 +25,7 @@
 
 ## Features
 
-- **discord.js Integration:** Retrieve channel messages with your existing discord.js client instance.
+- **discord.js Integration:** Retrieve channel messages seamlessly with your discord.js client instance.
 - **Beautiful UI:** Modern HTML/CSS that has the look and feel of the Discord desktop client.
 
 > [!NOTE]
@@ -33,87 +33,85 @@
 
 ## Preview
 
-<a title="Click For Full Preview" href="https://htmlpreview.github.io/?https://github.com/omardiaadev/discord-html-transcript/blob/main/examples/transcript.html">
+<a title="Click To View Full Preview" href="https://htmlpreview.github.io/?https://github.com/omardiaadev/discord-html-transcript/blob/main/examples/transcript.html">
     <img alt="discord-html-transcript" src="https://res.cloudinary.com/omardiaadev/image/upload/v1771423142/discord-html-transcript_ocjq03.png">
 </a>
 
 ## Getting Started
 
-This package depends on a [web server](https://github.com/omardiaadev/discord-html-transcript) to handle the generation
-of the transcripts.
-
 ### Installation
 
-#### Local Web Server (Default)
+By default, installing this package automatically downloads a standalone local
+[web server](https://github.com/omardiaadev/discord-html-transcript) to handle transcript generation without any extra
+configuration.
+
+#### Local Server
 
 ```shell
 npm i discord-html-transcript-discordjs
 ```
 
-#### Hosted Web Server
+#### External Server (Advanced)
 
 ```shell
 npm i discord-html-transcript-discordjs --ignore-scripts
 ```
 
 > [!NOTE]
-> If using a hosted web server, you must specify [`TRANSCRIPT_SERVER_URL`](#configuration)
-> (and [`TRANSCRIPT_SERVER_API_KEY`](#configuration) if authentication is required) in your environment variables.
+> Using an external server requires extra configuration, see [](#external-server)
 
 ## Usage
 
 ### Prerequisites
 
-To use this library, your discord.js client instance must enable the
-following [intents](https://discordjs.guide/legacy/popular-topics/intents#enabling-intents)
+To use this library, your discord.js client instance must have the following
+[intents](https://discordjs.guide/legacy/popular-topics/intents#enabling-intents) enabled:
 
 - `Guilds`
-- [`GuildMembers`](https://discordjs.guide/legacy/popular-topics/intents#privileged-intents) (Privileged Intent)
-- [`MessageContent`](https://discordjs.guide/legacy/popular-topics/intents#privileged-intents) (Privileged Intent)
+- `GuildMembers` (Privileged Intent)
+- `MessageContent` (Privileged Intent)
 
 ### Configuration
 
-#### Environment Variables
+You can configure the `TranscriberClient` depending on how you installed the package.
 
-<table>
-    <tr>
-        <th>Variable</th>
-        <th>Description</th>
-    </tr>
-    <tr>
-        <td><code>TRANSCRIPT_SERVER_HOST</code></td>
-        <td>Specifies custom host for the local web server.<br>(default: <code>127.0.0.1</code>)</td>
-    </tr>
-    <tr>
-        <td><code>TRANSCRIPT_SERVER_PORT</code></td>
-        <td>Specifies custom port for the local web server.<br>(default: <code>7000</code>)</td>
-    </tr>
-    <tr>
-        <td><code>TRANSCRIPT_SERVER_API_KEY</code></td>
-        <td>Specifies the secret key for authenticating external web server requests.</td>
-    </tr>
-    <tr>
-        <td><code>TRANSCRIPT_SERVER_URL</code></td>
-        <td>
-            Specifies external web server URL.
-            <br>Setting this will skip local web server execution and download.
-        </td>
-    </tr>
-</table>
+#### Local Server
 
-### Examples
+You can optionally override the host and port:
 
-#### 1. Slash Command
+```javascript
+const transcriber = new TranscriberClient(client, {
+    host: 'localhost', // default: '127.0.0.1'
+    port: 8080 // default: 7000
+});
+
+await transcriber.start();
+```
+
+#### External Server
+
+You must provide the URL to your externally hosted transcript server.
+
+```javascript
+const transcriber = new TranscriberClient(client, {
+    externalUrl: 'https://your-server-url',
+    apiKey: 'your-secret-key' // Required if your server requires authentication
+});
+
+await transcriber.start();
+```
+
+### Example: Slash Command
 
 > [!NOTE]
 > This section of the documentation is incomplete.
 
-```typescript
+```javascript
 import {Client, Events, GatewayIntentBits} from 'discord.js';
 import TranscriberClient from 'discord-html-transcript-discordjs';
 
 const client = new Client({
-  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.MessageContent],
+    intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.MessageContent],
 });
 
 const transcriber = new TranscriberClient(client);
@@ -121,79 +119,45 @@ const transcriber = new TranscriberClient(client);
 client.once(Events.ClientReady, (readyClient) => console.log(`Logged in as ${readyClient.user.tag}`));
 
 client.on(Events.InteractionCreate, async (interaction) => {
-  if (!interaction.isChatInputCommand()) return;
-  
-  const {commandName, channel} = interaction;
-  
-  if (commandName !== 'transcript') return;
-  
-  // Safely retrieve the channel
-  if (!channel) {
-    await interaction.reply({
-      content: 'Failed to retrieve channel.', ephemeral: true,
-    });
-    return;
-  }
-  
-  // Safely check the channel's type
-  if (channel.isDMBased() || !channel.isTextBased) {
-    await interaction.reply({
-      content: 'This command can only be used in guild text channels.', ephemeral: true,
-    });
-    return;
-  }
-  
-  try {
-    // Acknowledge the interaction before Discord expires it
-    // This is required in instances where a channel may have a large amount of messages to retrieve
-    await interaction.deferReply();
-    
-    const transcript = await transcriber.transcribe(channel);
-    const attachment = transcript.toAttachmentBuilder(channel.name);
-    
-    // Send the generated transcript
-    await interaction.editReply({files: [attachment]});
-  } catch (err) {
-    await interaction.editReply({content: 'Failed to generate transcript.'});
-  }
+    if (!interaction.isChatInputCommand()) return;
+    if (!interaction.commandName !== 'transcript') return;
+
+    const {channel} = interaction;
+
+    // Safely retrieve the channel
+    if (!channel) {
+        await interaction.reply({content: 'Failed to retrieve channel.', ephemeral: true});
+        return;
+    }
+
+    // Safely check the channel's type
+    if (channel.isDMBased() || !channel.isTextBased) {
+        await interaction.reply({content: 'This command can only be used in guild text channels.', ephemeral: true});
+        return;
+    }
+
+    try {
+        // Acknowledge the interaction before Discord expires it
+        // This is required in instances where a channel may have a large amount of messages to retrieve
+        await interaction.deferReply();
+
+        const transcript = await transcriber.transcribe(channel);
+        const attachment = transcript.toAttachmentBuilder(channel.name);
+
+        // Send the generated transcript
+        await interaction.editReply({files: [attachment]});
+    } catch (err) {
+        await interaction.editReply({content: 'Failed to generate transcript.'});
+    }
 });
 
+await transcriber.start();
 await client.login(process.env.DISCORD_BOT_TOKEN);
 ```
 
 ## Development
 
-> [!NOTE]
-> This section of the documentation is incomplete.
-
-### Setup
-
-- Clone the repository:
-
-```shell 
-git clone https://github.com/omardiaadev/discord-html-transcript-discordjs.git
-cd discord-html-transcript-discordjs
-npm install
-```
-
-### Testing
-
-- Configure `.env` file for testing:
-
-<table>
-    <tr>
-        <th>Variable</th>
-        <th>Description</th>
-    </tr>
-    <tr>
-        <td><code>DISCORD_BOT_TOKEN</code></td>
-        <td>Specifies Discord bot token.</td>
-    </tr>
-    <tr>
-        <td><code>DISCORD_CHANNEL_ID</code></td>
-        <td>Specifies Discord target guild channel.</td>
-    </tr>
-</table>
+Visit [Development](docs/development.md).
 
 ## Support
 

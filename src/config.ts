@@ -16,17 +16,21 @@
 
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import packageData from '../package.json' with { type: 'json' };
+import { GatewayIntentBits, IntentsBitField, PermissionFlagsBits, PermissionsBitField } from 'discord.js';
+import pkg from '../package.json' with { type: 'json' };
 
 const BIN_DIR = join(dirname(fileURLToPath(import.meta.url)), '../bin');
 
 export const SERVER_CONFIG = {
   dir: BIN_DIR,
   path: join(BIN_DIR, `server${process.platform === 'win32' ? '.exe' : ''}`),
-  version: packageData.server.version,
-  env: {
-    host: process.env.TRANSCRIPT_SERVER_HOST?.trim() || '127.0.0.1',
-    port: Number(process.env.TRANSCRIPT_SERVER_PORT) || 7000,
-    externalUrl: process.env.TRANSCRIPT_SERVER_URL?.trim(),
-  },
+  version: pkg.server.version,
 } as const;
+
+export const REQUIRED_INTENTS = new IntentsBitField(
+  GatewayIntentBits.Guilds | GatewayIntentBits.GuildMembers | GatewayIntentBits.MessageContent
+);
+
+export const REQUIRED_PERMISSIONS = new PermissionsBitField(
+  PermissionFlagsBits.ViewChannel | PermissionFlagsBits.ReadMessageHistory
+);

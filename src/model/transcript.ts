@@ -29,14 +29,14 @@ export class Transcript {
    * Writes {@linkcode output} into a file with the provided {@linkcode path}.
    *
    * @param path The file path to write into.
-   * @see fs.writeFile
+   * @see writeFile
    */
   public async toFile(path: string): Promise<void> {
     await writeFile(path, this.output);
   }
 
   /**
-   * Writes {@linkcode output} into discord.js's {@linkcode AttachmentBuilder}.
+   * Writes {@linkcode output} into a discord.js {@linkcode AttachmentBuilder}.
    *
    * @param filename The name to use for constructing the {@linkcode AttachmentBuilder}.\
    *   If {@linkcode filename} does not end with `.html`, it will be appended automatically.

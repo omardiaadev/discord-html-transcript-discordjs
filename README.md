@@ -18,7 +18,7 @@
         <li><a href="#preview">Preview</a></li>
         <li><a href="#getting-started">Getting Started</a></li>
         <li><a href="#usage">Usage</a></li>
-        <li><a href="#development">Development</a></li>
+        <li><a href="#contributing">Contributing</a></li>
         <li><a href="#support">Support</a></li>
     </ul>
 </details>
@@ -47,13 +47,13 @@ By default, installing this package automatically downloads a standalone local
 #### Local Server
 
 ```shell
-npm i discord-html-transcript-discordjs
+npm install discord-html-transcript-discordjs
 ```
 
 #### External Server (Advanced)
 
 ```shell
-npm i discord-html-transcript-discordjs --ignore-scripts
+npm install discord-html-transcript-discordjs --ignore-scripts
 ```
 
 > [!NOTE]
@@ -63,8 +63,8 @@ npm i discord-html-transcript-discordjs --ignore-scripts
 
 ### Prerequisites
 
-- Node.js v24.14.0+.
-- discord.js v14+.
+- **Node.js v24.14.0+**
+- **discord.js v14+**
 - `Guilds`, `GuildMembers`, `MessageContent`
   [intents](https://discordjs.guide/legacy/popular-topics/intents#enabling-intents) enabled.
 
@@ -74,7 +74,7 @@ You can configure the `TranscriberClient` depending on how you installed the pac
 
 #### Local Server
 
-- You can optionally override the server's host and port:
+You can optionally override the server's host and port:
 
 ```javascript
 const transcriber = new TranscriberClient(client, {
@@ -153,9 +153,6 @@ await client.login(process.env.DISCORD_BOT_TOKEN);
 ```
 
 ## [Contributing](CONTRIBUTING.md)
-
-> [!NOTE]
-> This section of the documentation is incomplete.
 
 Need help? Wanna request a feature? [Join us today](https://discord.omardiaa.dev)!
 

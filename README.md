@@ -63,7 +63,8 @@ npm i discord-html-transcript-discordjs --ignore-scripts
 
 ### Prerequisites
 
-- discord.js v14 or higher.
+- Node.js v24.14.0+.
+- discord.js v14+.
 - `Guilds`, `GuildMembers`, `MessageContent`
   [intents](https://discordjs.guide/legacy/popular-topics/intents#enabling-intents) enabled.
 
@@ -73,7 +74,7 @@ You can configure the `TranscriberClient` depending on how you installed the pac
 
 #### Local Server
 
-You can optionally override the host and port:
+- You can optionally override the server's host and port:
 
 ```javascript
 const transcriber = new TranscriberClient(client, {
@@ -151,9 +152,12 @@ await transcriber.start();
 await client.login(process.env.DISCORD_BOT_TOKEN);
 ```
 
-## Development
+## [Contributing](CONTRIBUTING.md)
 
-Visit [Development](docs/development.md).
+> [!NOTE]
+> This section of the documentation is incomplete.
+
+Need help? Wanna request a feature? [Join us today](https://discord.omardiaa.dev)!
 
 ## Support
 

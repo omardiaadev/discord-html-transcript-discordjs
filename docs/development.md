@@ -13,19 +13,9 @@ cd discord-html-transcript-discordjs
 npm install
 ```
 
-- Configure `.env` file for testing:
+- Create `.env` file in your root folder:
 
-<table>
-    <tr>
-        <th>Variable</th>
-        <th>Description</th>
-    </tr>
-    <tr>
-        <td><code>DISCORD_BOT_TOKEN</code></td>
-        <td>Specifies Discord bot token.</td>
-    </tr>
-    <tr>
-        <td><code>DISCORD_CHANNEL_ID</code></td>
-        <td>Specifies Discord target guild channel.</td>
-    </tr>
-</table>
+```env
+DISCORD_BOT_TOKEN=<your_bot_token>
+DISCORD_CHANNEL_ID=<your_channel_id_to_transcribe>
+```

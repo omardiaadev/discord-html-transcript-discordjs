@@ -42,8 +42,7 @@
 ### Installation
 
 By default, installing this package automatically downloads a standalone local
-[web server](https://github.com/omardiaadev/discord-html-transcript) to handle transcript generation without any extra
-configuration.
+[web server](https://github.com/omardiaadev/discord-html-transcript) that handles the transcript generation.
 
 #### Local Server
 
@@ -58,18 +57,15 @@ npm i discord-html-transcript-discordjs --ignore-scripts
 ```
 
 > [!NOTE]
-> Using an external server requires extra configuration, see [](#external-server)
+> Using an external server requires [extra configuration](#external-server).
 
 ## Usage
 
 ### Prerequisites
 
-To use this library, your discord.js client instance must have the following
-[intents](https://discordjs.guide/legacy/popular-topics/intents#enabling-intents) enabled:
-
-- `Guilds`
-- `GuildMembers` (Privileged Intent)
-- `MessageContent` (Privileged Intent)
+- discord.js v14 or higher.
+- `Guilds`, `GuildMembers`, `MessageContent`
+  [intents](https://discordjs.guide/legacy/popular-topics/intents#enabling-intents) enabled.
 
 ### Configuration
 

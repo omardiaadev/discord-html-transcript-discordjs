@@ -25,20 +25,42 @@ local environment running.
 > [!NOTE]
 > This section of the documentation is incomplete.
 
-1. **Clone the repository:**
+### Setup
+
+- **Clone the repository:**
     ```shell
-    $ git clone https://github.com/omardiaadev/discord-html-transcript-discordjs.git
-    $ cd discord-html-transcript-discordjs
-    $ npm install
+    git clone https://github.com/omardiaadev/discord-html-transcript-discordjs.git
+    cd discord-html-transcript-discordjs
+    npm install
     ```
 
-2. **Create `.env` file in your root folder:**
+### Configuration
+
+#### package.json
+
+This package requires specific `package.json` configuration to function correctly.
+A custom JSON property `server` is required in order to resolve the executable server's version.
+
+- **Example**
+    ```json
+    {
+      "server": {
+        "version": "<expected_server_version>"
+      }
+    }
+    ```
+
+### Testing
+
+#### Environment
+
+1. Configure `.env` file in your project root:
     ```env
-    DISCORD_BOT_TOKEN=<your_bot_token>
-    DISCORD_CHANNEL_ID=<your_channel_id_to_transcribe>
+    DISCORD_BOT_TOKEN=your_bot_token
+    DISCORD_CHANNEL_ID=your_channel_id
     ```
 
-3. **Run the tests:**
+2. **Run the tests:**
     ```shell
-    $ npm test
+    npm test
     ```

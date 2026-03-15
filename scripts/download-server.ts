@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import {accessSync, constants, writeFileSync} from 'node:fs';
-import {checkServerDir, validateServer} from '../src/util/server-util.js';
-import {SERVER_CONFIG} from '../src/config.js';
+import { writeFileSync } from 'node:fs';
+import { SERVER_CONFIG } from '../src/config.js';
+import { checkServerDir, validateServer } from '../src/util/server-util.js';
 
 downloadServer().catch((err) => {
   console.error('Fatal error during server download:', err);
@@ -24,22 +24,27 @@ downloadServer().catch((err) => {
 });
 
 /**
- * Downloads the transcriber web server from GitHub Releases.
+ * Downloads the transcriber executable server.
  *
- * The download is skipped if `TRANSCRIBER_SERVER_URL` environment variable is set.
+ * The download is skipped if any of the following applies:
+ *
+ * - Environment variable `TRANSCRIPT_SERVER_SKIP_DOWNLOAD` is set to `true`.
+ * - NPM flag `--transcript-server-skip-download` is set to `true`.
  *
  * @see https://github.com/omardiaadev/discord-html-transcript/releases
  */
 async function downloadServer() {
-  if (SERVER_CONFIG.env.externalUrl) {
-    console.log("Found 'TRANSCRIPT_SERVER_URL' environment variable, skipping server download...");
+  const npmSkip = Boolean(process.env.npm_config_transcript_server_skip_download);
+  const envSkip = Boolean(process.env.TRANSCRIPT_SERVER_SKIP_DOWNLOAD);
+
+  if (npmSkip || envSkip) {
+    console.log('Skipping server executable download due to configuration...');
     return;
   }
 
   try {
-    accessSync(SERVER_CONFIG.path, constants.F_OK);
-    console.log('Server executable already exists, skipping download...');
     validateServer();
+    console.log('Server executable exists, skipping download...');
     return;
   } catch (err) {}
 
@@ -54,12 +59,12 @@ async function downloadServer() {
   const response = await fetch(url);
 
   if (!response.ok || !response.body) {
-    throw new Error(`Failed to download server: ${response.statusText} (${response.status})`);
+    throw new Error(`Failed to download server: ${response.statusText} ${response.status}`);
   }
 
   try {
     checkServerDir();
-    writeFileSync(SERVER_CONFIG.path, await response.bytes());
+    writeFileSync(SERVER_CONFIG.path, Buffer.from(await response.arrayBuffer()));
 
     console.log('Download complete.');
 

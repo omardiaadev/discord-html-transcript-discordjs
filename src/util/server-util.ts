@@ -49,8 +49,8 @@ export function checkServerPath() {
   } catch (err) {
     throw new Error(
       `Server executable not found at: ${SERVER_CONFIG.path}\n
-      If you meant to use a local server, please run 'npm install' without --ignore-scripts.\n
-      If you mean to use an external server, make sure TRANSCRIPT_SERVER_URL variable is valid.`,
+      If you meant to use a local server, run 'npm install' without --ignore-scripts.\n
+      If you meant to use an external server, make sure to configure TranscriberClient.`,
       { cause: err }
     );
   }
@@ -65,11 +65,11 @@ export function checkServerPermissions() {
     try {
       chmodSync(SERVER_CONFIG.path, 0o755);
       console.log('Server executable permissions set to 755.');
-    } catch (err) {
+    } catch (chmodErr) {
       throw new Error(
         `Failed to set server executable permissions.\n
         Please run 'chmod +x ${SERVER_CONFIG.path}'`,
-        { cause: err }
+        { cause: chmodErr }
       );
     }
   }

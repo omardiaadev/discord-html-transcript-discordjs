@@ -30,8 +30,7 @@
       "require": {
         "types": "./dist/index.d.cts",
         "default": "./dist/index.cjs"
-      },
-      "default": "./dist/main.mjs"
+      }
     }
   },
   "repository": {

@@ -27,7 +27,13 @@ local environment running.
 
 ### Setup
 
-- **Clone the repository:**
+#### Prerequisites
+
+- **Node.js v24.14.0+**
+
+#### Clone
+
+- Clone the repository:
     ```shell
     git clone https://github.com/omardiaadev/discord-html-transcript-discordjs.git
     cd discord-html-transcript-discordjs
@@ -41,7 +47,7 @@ local environment running.
 This package requires specific `package.json` configuration to function correctly.
 A custom JSON property `server` is required in order to resolve the executable server's version.
 
-- **Example**
+- Example
     ```json
     {
       "server": {
@@ -60,7 +66,7 @@ A custom JSON property `server` is required in order to resolve the executable s
     DISCORD_CHANNEL_ID=your_channel_id
     ```
 
-2. **Run the tests:**
+2. Run the tests:
     ```shell
     npm test
     ```

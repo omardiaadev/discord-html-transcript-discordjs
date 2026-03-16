@@ -91,8 +91,6 @@ const transcriber = new TranscriberClient(client, {
     host: 'localhost', // default: '127.0.0.1'
     port: 8080 // default: 7000
 });
-
-await transcriber.start();
 ```
 
 #### External Server
@@ -104,8 +102,6 @@ const transcriber = new TranscriberClient(client, {
     externalUrl: 'https://your-server-url',
     apiKey: 'your-secret-key' // Required if your server requires authentication
 });
-
-await transcriber.start();
 ```
 
 ### Example: Slash Command

@@ -28,11 +28,9 @@ export function validateServer() {
   checkServerDir();
   checkServerPath();
 
-  if (process.platform == 'win32') {
-    return;
+  if (process.platform !== 'win32') {
+    checkServerPermissions();
   }
-
-  checkServerPermissions();
 }
 
 export function checkServerDir() {
@@ -48,8 +46,8 @@ export function checkServerPath() {
     accessSync(SERVER_CONFIG.path, constants.F_OK);
   } catch (err) {
     throw new Error(
-      `Server executable not found at: ${SERVER_CONFIG.path}\n
-      If you meant to use a local server, run 'npm install' without --ignore-scripts.\n
+      `Server executable not found at: ${SERVER_CONFIG.path}
+      If you meant to use a local server, run 'npm install' without --ignore-scripts.
       If you meant to use an external server, make sure to configure TranscriberClient.`,
       { cause: err }
     );
@@ -67,7 +65,7 @@ export function checkServerPermissions() {
       console.log('Server executable permissions set to 755.');
     } catch (chmodErr) {
       throw new Error(
-        `Failed to set server executable permissions.\n
+        `Failed to set server executable permissions.
         Please run 'chmod +x ${SERVER_CONFIG.path}'`,
         { cause: chmodErr }
       );

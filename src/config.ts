@@ -16,21 +16,19 @@
 
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { GatewayIntentBits, IntentsBitField, PermissionFlagsBits, PermissionsBitField } from 'discord.js';
 import pkg from '../package.json' with { type: 'json' };
 
 const BIN_DIR = join(dirname(fileURLToPath(import.meta.url)), '../bin');
 
+const { version } = pkg.server;
+const { platform, arch } = process;
+
+const fileExtension = platform === 'win32' ? '.exe' : '';
+const filename = `discord-html-transcript-server-${version}-${platform}-${arch}${fileExtension}`;
+
 export const SERVER_CONFIG = {
   dir: BIN_DIR,
-  path: join(BIN_DIR, `server${process.platform === 'win32' ? '.exe' : ''}`),
-  version: pkg.server.version,
+  path: join(BIN_DIR, filename),
+  filename: filename,
+  version: version,
 } as const;
-
-export const REQUIRED_INTENTS = new IntentsBitField(
-  GatewayIntentBits.Guilds | GatewayIntentBits.GuildMembers | GatewayIntentBits.MessageContent
-);
-
-export const REQUIRED_PERMISSIONS = new PermissionsBitField(
-  PermissionFlagsBits.ViewChannel | PermissionFlagsBits.ReadMessageHistory
-);

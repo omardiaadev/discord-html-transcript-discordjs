@@ -19,8 +19,8 @@ import { SERVER_CONFIG } from '../src/config.js';
 import { checkServerDir, validateServer } from '../src/util/server-util.js';
 
 downloadServer().catch((err) => {
-  console.error('Fatal error during server download:', err);
-  process.exit(1);
+  console.error(err);
+  process.exit(0);
 });
 
 /**
@@ -46,25 +46,25 @@ async function downloadServer() {
     validateServer();
     console.log('Server executable exists, skipping download...');
     return;
-  } catch (err) {}
+  } catch {}
 
-  const { platform, arch } = process;
-  const extension = platform === 'win32' ? '.exe' : '';
+  const { path, filename, version } = SERVER_CONFIG;
+  const url = `https://github.com/omardiaadev/discord-html-transcript/releases/download/${version}/${filename}`;
 
-  const filename = `discord-html-transcript-server-${SERVER_CONFIG.version}-${platform}-${arch}${extension}`;
-  const url = `https://github.com/omardiaadev/discord-html-transcript/releases/download/${SERVER_CONFIG.version}/${filename}`;
-
-  console.log(`Downloading server: ${url}`);
+  console.log(`Downloading ${url}...`);
 
   const response = await fetch(url);
 
   if (!response.ok || !response.body) {
-    throw new Error(`Failed to download server: ${response.statusText} ${response.status}`);
+    throw new Error(
+      `Failed to download server: ${response.status} ${response.statusText}.
+      Download URL: ${url}`
+    );
   }
 
   try {
     checkServerDir();
-    writeFileSync(SERVER_CONFIG.path, Buffer.from(await response.arrayBuffer()));
+    writeFileSync(path, Buffer.from(await response.arrayBuffer()));
 
     console.log('Download complete.');
 

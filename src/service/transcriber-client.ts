@@ -14,12 +14,26 @@
  * limitations under the License.
  */
 
-import { Client, GuildTextBasedChannel } from 'discord.js';
+import {
+  Client,
+  GatewayIntentBits,
+  GuildTextBasedChannel,
+  IntentsBitField,
+  PermissionFlagsBits,
+  PermissionsBitField,
+} from 'discord.js';
 import { TranscriberClientFetcher } from '../internal/transcriber-client-fetcher.js';
 import { Transcript } from '../model/transcript.js';
 import { Server, ServerOptions } from '../internal/server.js';
 import { InvalidChannelTypeError, MissingIntentsError, MissingPermissionsError } from '../error/transcriber-error.js';
-import { REQUIRED_INTENTS, REQUIRED_PERMISSIONS } from '../config.js';
+
+export const REQUIRED_INTENTS = new IntentsBitField(
+  GatewayIntentBits.Guilds | GatewayIntentBits.GuildMembers | GatewayIntentBits.MessageContent
+);
+
+export const REQUIRED_PERMISSIONS = new PermissionsBitField(
+  PermissionFlagsBits.ViewChannel | PermissionFlagsBits.ReadMessageHistory
+);
 
 /**
  * Generates HTML Discord channel transcripts.

@@ -15,14 +15,13 @@
  */
 
 import { defineConfig } from 'eslint/config';
-import js from '@eslint/js';
+import jseslint from '@eslint/js';
+import tseslint from 'typescript-eslint';
 
-/** @see https://eslint.org/docs/latest/use/configure/ */
 export default defineConfig([
-  js.configs.recommended,
   {
-    languageOptions: {
-      ecmaVersion: 'latest',
-    },
+    ignores: ['dist'],
   },
+  jseslint.configs.recommended,
+  tseslint.configs.recommended,
 ]);

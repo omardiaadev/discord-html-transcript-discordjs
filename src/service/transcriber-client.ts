@@ -14,29 +14,19 @@
  * limitations under the License.
  */
 
-import {
-  Client,
-  GatewayIntentBits,
-  GuildTextBasedChannel,
-  IntentsBitField,
-  PermissionFlagsBits,
-  PermissionsBitField,
-} from 'discord.js';
+import { ChannelType, Client, GatewayIntentBits, GuildTextBasedChannel, PermissionFlagsBits } from 'discord.js';
 import { TranscriberClientFetcher } from '../internal/transcriber-client-fetcher.js';
-import { Transcript } from '../model/transcript.js';
 import { Server, ServerOptions } from '../internal/server.js';
 import { InvalidChannelTypeError, MissingIntentsError, MissingPermissionsError } from '../error/transcriber-error.js';
+import { Transcript } from '../model/transcript.js';
 
-export const REQUIRED_INTENTS = new IntentsBitField(
-  GatewayIntentBits.Guilds | GatewayIntentBits.GuildMembers | GatewayIntentBits.MessageContent
-);
+export const REQUIRED_INTENTS =
+  GatewayIntentBits.Guilds | GatewayIntentBits.GuildMembers | GatewayIntentBits.MessageContent;
 
-export const REQUIRED_PERMISSIONS = new PermissionsBitField(
-  PermissionFlagsBits.ViewChannel | PermissionFlagsBits.ReadMessageHistory
-);
+export const REQUIRED_PERMISSIONS = PermissionFlagsBits.ViewChannel | PermissionFlagsBits.ReadMessageHistory;
 
 /**
- * Generates HTML Discord channel transcripts.
+ * Transcribes Discord channels into natively styled HTML transcripts.
  *
  * @example
  *   const transcriber = new TranscriberClient(client); // Instantiate once
@@ -78,46 +68,50 @@ export class TranscriberClient {
    * Transcribes the provided {@linkcode guildChannel} into a {@linkcode Transcript}.
    *
    * @param guildChannel The text-based guild channel to transcribe.
-   * @returns A promise that resolves to a {@link Transcript}.
-   * @throws Error If the provided {@linkcode client} instance lacks permissions, or the transcript web server fails.
+   * @returns A promise that resolves with a {@link Transcript}.
+   * @throws MissingPermissionsError If the provided {@linkcode client} instance lacks permissions in the provided
+   *   {@linkcode guildChannel}.
+   * @throws Error If the provided {@linkcode client} encountered an error while retrieving the payload, or the
+   *   transcript web server fails.
    */
   public async transcribe(guildChannel: GuildTextBasedChannel): Promise<Transcript> {
     if (!this.server.isReady()) {
-      throw new Error('TranscriberClient is not initialized. Did you forget to call "await transcriber.start()"?');
+      throw new Error('Transcriber server is stopped. Did you forget to call "await transcriber.start()"?');
     }
 
     await this.validateChannel(guildChannel);
 
-    const [guild, channel, messages] = await Promise.all([
-      this.transcriberFetcher.getGuild(guildChannel.guildId),
-      this.transcriberFetcher.getChannel(guildChannel.id),
-      this.transcriberFetcher.getMessages(guildChannel.id),
-    ]);
-
     try {
+      const [guild, channel, messages] = await Promise.all([
+        this.transcriberFetcher.getGuild(guildChannel.guildId),
+        this.transcriberFetcher.getChannel(guildChannel.id),
+        this.transcriberFetcher.getMessages(guildChannel.id),
+      ]);
+
       const response = await this.server.fetchTranscript({ guild, channel, messages });
       const bytes = await response.bytes();
 
       return new Transcript(bytes);
-    } catch (err) {
+    } catch (error) {
       throw new Error(
-        `Failed to generate transcript due to unknown exception. [Channel: ${channel.id}, Guild: ${guild.id}]`,
-        { cause: err }
+        `Failed to generate transcript.
+        [Channel: ${guildChannel.id}, Guild: ${guildChannel.guildId}]`,
+        { cause: error }
       );
     }
   }
 
   /**
-   * Validates the provided {@linkcode channel}'s type and required permissions.
+   * Validates the provided {@linkcode channel}.
    *
    * @param channel The text-based guild channel to validate.
-   * @throws InvalidChannelTypeError If the provided {@linkcode channel} is DM-based.
+   * @throws InvalidChannelTypeError If the provided {@linkcode channel} is not of type 0 (GuildText).
    * @throws MissingPermissionsError If the provided {@linkcode channel} is missing any of
    *   {@linkcode REQUIRED_PERMISSIONS}.
    */
   private async validateChannel(channel: GuildTextBasedChannel): Promise<void> {
-    if (channel.isDMBased()) {
-      throw new InvalidChannelTypeError(channel);
+    if (channel.type !== ChannelType.GuildText) {
+      throw new InvalidChannelTypeError(channel, ChannelType.GuildText);
     }
 
     const member = channel.guild.members.me ?? (await channel.guild.members.fetchMe());

@@ -17,10 +17,10 @@
 import { ServerErrorPayload } from '../types.js';
 import { SERVER_CONFIG } from '../config.js';
 
-/** Error implementation for all exceptions related to the transcriber server. */
+/** Error implementation for exceptions related to the transcriber server. */
 export class ServerError extends Error {
-  constructor(message: string) {
-    super(message);
+  constructor(message: string, options?: ErrorOptions) {
+    super(message, options);
     this.name = this.constructor.name;
     if (Error.captureStackTrace) {
       Error.captureStackTrace(this, this.constructor);
@@ -28,18 +28,29 @@ export class ServerError extends Error {
   }
 }
 
+/** @see https://github.com/omardiaadev/discord-html-transcript/blob/main/server/src/main/java/dev/omardiaa/transcript/server/exception/GlobalExceptionHandler.java */
 export class ServerMismatchedInputError extends ServerError {
   constructor(error: ServerErrorPayload) {
-    super(`Received mismatched Payload.\nProblem: "${error.details?.problem}"\nPath: "${error.details?.path}"`);
+    super(
+      `Received mismatched Payload.
+      Problem: "${error.details?.problem}"
+      Path: "${error.details?.path}"`
+    );
   }
 }
 
+/** @see https://github.com/omardiaadev/discord-html-transcript/blob/main/server/src/main/java/dev/omardiaa/transcript/server/exception/GlobalExceptionHandler.java */
 export class ServerMismatchedVersionError extends ServerError {
   constructor(error: ServerErrorPayload) {
-    super(`${error.message}\nClient Expected: "${SERVER_CONFIG.version}", Actual: "${error.details?.server}".`);
+    super(
+      `${error.message}
+      Client Expected: "${SERVER_CONFIG.version}"
+      Actual: "${error.details?.server}".`
+    );
   }
 }
 
+/** @see https://github.com/omardiaadev/discord-html-transcript/blob/main/server/src/main/java/dev/omardiaa/transcript/server/exception/GlobalExceptionHandler.java */
 export class ServerAuthenticationError extends ServerError {
   constructor() {
     super('Failed to authenticate client with the transcriber web server.');
@@ -47,7 +58,7 @@ export class ServerAuthenticationError extends ServerError {
 }
 
 export class ServerConnectionError extends ServerError {
-  constructor(url: string) {
-    super(`Failed to reach the transcriber server at ${url}`);
+  constructor(url: string, cause?: ErrorOptions) {
+    super(`Failed to reach the transcriber server at ${url}`, { cause });
   }
 }

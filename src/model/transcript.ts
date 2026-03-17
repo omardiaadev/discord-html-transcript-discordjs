@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import { writeFile } from 'node:fs/promises';
 import { AttachmentBuilder } from 'discord.js';
+import { writeFile } from 'node:fs/promises';
 
 /** Represents the generated HTML file as a byte output, provides utility functions. */
 export class Transcript {
   private readonly output;
 
+  /** @param output The transcript byte output. */
   constructor(output: Uint8Array<ArrayBuffer>) {
     this.output = output;
   }
@@ -28,8 +29,7 @@ export class Transcript {
   /**
    * Writes {@linkcode output} into a file with the provided {@linkcode path}.
    *
-   * @param path The file path to write into.
-   * @see writeFile
+   * @param path The destination file path.
    */
   public async toFile(path: string): Promise<void> {
     await writeFile(path, this.output);
@@ -38,12 +38,12 @@ export class Transcript {
   /**
    * Writes {@linkcode output} into a discord.js {@linkcode AttachmentBuilder}.
    *
-   * @param filename The name to use for constructing the {@linkcode AttachmentBuilder}.\
-   *   If {@linkcode filename} does not end with `.html`, it will be appended automatically.
+   * @param filename The name to use for {@linkcode AttachmentBuilder}.\
+   *   If the name does not end with `.html`, it will be appended automatically.
    * @returns {@linkcode AttachmentBuilder} To use directly in discord.js interactions.
    */
   public toAttachmentBuilder(filename: string = 'transcript.html'): AttachmentBuilder {
-    filename = !filename.endsWith('.html') ? filename.concat('.html') : filename;
-    return new AttachmentBuilder(Buffer.from(this.output), { name: filename });
+    const name = filename.toLowerCase().endsWith('.html') ? filename : `${filename}.html`;
+    return new AttachmentBuilder(Buffer.from(this.output), { name });
   }
 }

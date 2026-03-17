@@ -34,10 +34,10 @@ downloadServer().catch((err) => {
  * @see https://github.com/omardiaadev/discord-html-transcript/releases
  */
 async function downloadServer() {
-  const npmSkip = Boolean(process.env.npm_config_transcript_server_skip_download);
+  const flagSkip = Boolean(process.env.npm_config_transcript_server_skip_download);
   const envSkip = Boolean(process.env.TRANSCRIPT_SERVER_SKIP_DOWNLOAD);
 
-  if (npmSkip || envSkip) {
+  if (flagSkip || envSkip) {
     console.log('Skipping server executable download due to configuration...');
     return;
   }
@@ -45,31 +45,30 @@ async function downloadServer() {
   try {
     validateServer();
     console.log('Server executable exists, skipping download...');
-    return;
-  } catch {}
+  } catch {
+    const { path, filename, version } = SERVER_CONFIG;
+    const url = `https://github.com/omardiaadev/discord-html-transcript/releases/download/${version}/${filename}`;
 
-  const { path, filename, version } = SERVER_CONFIG;
-  const url = `https://github.com/omardiaadev/discord-html-transcript/releases/download/${version}/${filename}`;
+    console.log(`Downloading ${url}...`);
 
-  console.log(`Downloading ${url}...`);
+    const response = await fetch(url);
 
-  const response = await fetch(url);
+    if (!response.ok || !response.body) {
+      throw new Error(
+        `Failed to download server: ${response.status} ${response.statusText}.
+        Download URL: ${url}`
+      );
+    }
 
-  if (!response.ok || !response.body) {
-    throw new Error(
-      `Failed to download server: ${response.status} ${response.statusText}.
-      Download URL: ${url}`
-    );
-  }
+    try {
+      checkServerDir();
+      writeFileSync(path, Buffer.from(await response.arrayBuffer()));
 
-  try {
-    checkServerDir();
-    writeFileSync(path, Buffer.from(await response.arrayBuffer()));
+      console.log(`Saved download: ${path}`);
 
-    console.log('Download complete.');
-
-    validateServer();
-  } catch (err) {
-    throw new Error('Failed to save the server to disk.', { cause: err });
+      validateServer();
+    } catch (error) {
+      throw new Error('Failed to save the server to disk.', { cause: error });
+    }
   }
 }

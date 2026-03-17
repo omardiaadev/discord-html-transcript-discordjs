@@ -57,17 +57,17 @@ export function checkServerPath() {
 export function checkServerPermissions() {
   try {
     accessSync(SERVER_CONFIG.path, constants.X_OK);
-  } catch (err) {
+  } catch {
     console.warn('Server executable permissions are missing, attempting to set them...');
 
     try {
       chmodSync(SERVER_CONFIG.path, 0o755);
       console.log('Server executable permissions set to 755.');
-    } catch (chmodErr) {
+    } catch (err) {
       throw new Error(
         `Failed to set server executable permissions.
         Please run 'chmod +x ${SERVER_CONFIG.path}'`,
-        { cause: chmodErr }
+        { cause: err }
       );
     }
   }

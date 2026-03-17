@@ -72,8 +72,8 @@ export class Server {
    * If an `externalUrl` was provided in the initialization options, this method will attempt to connect to that
    * external server. Otherwise, it spawns a local server process using The configured `host` and `port`.
    *
-   * @returns A promise that resolves when the server is ready for requests.
-   * @throws ServerConnectionError If the server fails to start or cannot be reached.
+   * @returns A promise that resolves with the readiness of the server.
+   * @throws ServerConnectionError If the server cannot be reached.
    */
   public async start(): Promise<void> {
     this.status = Status.Starting;
@@ -97,9 +97,9 @@ export class Server {
       await this.checkReady();
       this.status = Status.Started;
       console.log(`Transcriber server started: ${this.url}`);
-    } catch (err) {
+    } catch (error) {
       this.stop();
-      throw new ServerConnectionError(this.url);
+      throw new ServerConnectionError(this.url, { cause: error });
     }
   }
 

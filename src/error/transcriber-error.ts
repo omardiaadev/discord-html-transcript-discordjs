@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { Channel, GatewayIntentsString, GuildTextBasedChannel, PermissionsString } from 'discord.js';
+import { Channel, ChannelType, GatewayIntentsString, GuildTextBasedChannel, PermissionsString } from 'discord.js';
 
-class TranscriberError extends Error {
+/** Error implementation for exceptions related to the transcriber. */
+export class TranscriberError extends Error {
   constructor(message: string) {
     super(message);
     this.name = this.constructor.name;
@@ -26,7 +27,7 @@ class TranscriberError extends Error {
   }
 }
 
-/** Indicates that a discord.js client instance is missing required intents. */
+/** Indicates that the discord.js client instance used is missing required intents. */
 export class MissingIntentsError extends TranscriberError {
   public readonly intents: GatewayIntentsString[];
 
@@ -36,23 +37,22 @@ export class MissingIntentsError extends TranscriberError {
   }
 }
 
-/** Indicates that a discord.js client instance is missing required permissions. */
+/** Indicates that the discord.js client instance used is missing required permissions. */
 export class MissingPermissionsError extends TranscriberError {
   public readonly permissions: PermissionsString[];
 
   constructor(permissions: PermissionsString[], channel: GuildTextBasedChannel) {
     super(
-      `Client is missing [${permissions.join(', ')}] permissions in [Channel: ${channel.id}, Guild: ${channel.guildId}]`
+      `Client is missing [${permissions.join(', ')}] permissions.
+      [Channel: ${channel.id}, Guild: ${channel.guildId}]`
     );
     this.permissions = permissions;
   }
 }
 
+/** Indicates that a channel's type is invalid. */
 export class InvalidChannelTypeError extends TranscriberError {
-  public readonly channel: Channel;
-
-  constructor(channel: Channel) {
-    super(`Channel must be of type GUILD_TEXT`);
-    this.channel = channel;
+  constructor(channel: Channel, requiredType: ChannelType) {
+    super(`Channel must be of type ${requiredType}. [Channel: ${channel.id}]`);
   }
 }

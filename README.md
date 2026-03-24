@@ -31,7 +31,7 @@
 ## Preview
 
 <a title="Click For Full Preview" href="https://htmlpreview.github.io/?https://github.com/omardiaadev/discord-html-transcript/blob/main/examples/transcript.html">
-    <img alt="discord-html-transcript" src="https://res.cloudinary.com/omardiaadev/image/upload/v1771423142/discord-html-transcript_ocjq03.png">
+    <img alt="discord-html-transcript" src="https://res.cloudinary.com/omardiaadev/image/upload/discord-html-transcript_ocjq03.png">
 </a>
 
 ## Getting Started
@@ -45,8 +45,7 @@ the transcripts.
 #### Local Server
 
 ```shell
-npm install discord-html-transcript-discordjs
-pnpm add discord-html-transcript-discordjs
+npm i discord-html-transcript-discordjs
 ```
 
 #### External Server (Advanced)
@@ -54,20 +53,18 @@ pnpm add discord-html-transcript-discordjs
 If you are using a self-hosted server, you can skip the executable download using an environment variable or NPM
 configuration flag.
 
-- **Via CLI Flags**
+- **Via NPM Flags**
     ```shell
-    npm install discord-html-transcript-discordjs --transcript-server-skip-download
-    pnpm add discord-html-transcript-discordjs --config.transcript-server-skip-download=true
+    npm i discord-html-transcript-discordjs --transcript-server-skip-download
     ```
 
 - **Via Environment Variables**
     ```shell
-    TRANSCRIBER_SERVER_SKIP_DOWNLOAD=true npm install discord-html-transcript-discordjs
-    TRANSCRIBER_SERVER_SKIP_DOWNLOAD=true pnpm add discord-html-transcript-discordjs
+    TRANSCRIBER_SERVER_SKIP_DOWNLOAD=true npm i discord-html-transcript-discordjs
     ```
 
 > [!NOTE]
-> Using an external server requires [extra configuration](#external-server).
+> [Extra configuration](#external-server) is required if you're using an external server.
 
 ## Usage
 

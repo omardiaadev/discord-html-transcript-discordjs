@@ -19,6 +19,7 @@ import { SERVER_CONFIG } from '../config.js';
 import {
   ServerAuthenticationError,
   ServerConnectionError,
+  ServerError,
   ServerMismatchedInputError,
   ServerMismatchedVersionError,
 } from '../error/server-error.js';
@@ -99,7 +100,7 @@ export class Server {
       console.log(`Transcriber server started: ${this.url}`);
     } catch (error) {
       this.stop();
-      throw new ServerConnectionError(this.url, { cause: error });
+      throw error;
     }
   }
 
@@ -114,8 +115,9 @@ export class Server {
       try {
         await this.fetchHealth();
         return;
-      } catch (err) {
-        if (attempt === maxAttempts) throw err;
+      } catch (error) {
+        if (error instanceof ServerError) throw error;
+        if (attempt === maxAttempts) throw error;
         await new Promise((resolve) => setTimeout(resolve, intervalMs));
       }
     }

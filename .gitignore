@@ -1,12 +1,14 @@
 # Node.js
-/node_modules/
-/dist/
+node_modules/
+dist/
+
+# NPM
+*.tgz
 
 # IntelliJ IDEA
-/.idea/
+.idea/
 
 # Misc
-/bin/
-/playground/
+bin/
+temp/
 .env
-*.tgz

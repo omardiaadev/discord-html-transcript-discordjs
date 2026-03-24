@@ -17,6 +17,7 @@
 import { mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { Client, Events, GuildTextBasedChannel } from 'discord.js';
+import { Logger } from '../internal/logger.js';
 import { REQUIRED_INTENTS, TranscriberClient } from './transcriber-client.js';
 
 const client = new Client({ intents: REQUIRED_INTENTS });
@@ -34,7 +35,7 @@ beforeAll(async () => {
   await transcriber.start();
   await client.login(process.env.DISCORD_BOT_TOKEN);
 
-  client.once(Events.ClientReady, (readyClient) => console.log(`[Bot] Logged in as ${readyClient.user.tag}.`));
+  client.once(Events.ClientReady, (readyClient) => Logger.info(`Logged in as ${readyClient.user.tag}`));
 }, 30000);
 
 afterAll(async () => {
@@ -46,12 +47,12 @@ test('shouldCreateTranscript', async () => {
   const channel = await client.channels.fetch(process.env.DISCORD_CHANNEL_ID as string, { force: true });
 
   const transcript = await transcriber.transcribe(channel as GuildTextBasedChannel);
-  const transcriptDir = join(process.cwd(), 'dist');
+  const transcriptDir = join(process.cwd(), 'temp');
 
   mkdirSync(transcriptDir, { recursive: true });
 
   const transcriptPath = join(transcriptDir, 'transcript.html');
   await transcript.toFile(transcriptPath);
 
-  console.log(`Saved file://${transcriptPath}`);
+  Logger.info(`Saved file://${transcriptPath}`);
 }, 30000);

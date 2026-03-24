@@ -17,7 +17,12 @@
 import { ChannelType, Client, GatewayIntentBits, GuildTextBasedChannel, PermissionFlagsBits } from 'discord.js';
 import { TranscriberClientFetcher } from '../internal/transcriber-client-fetcher.js';
 import { Server, ServerOptions } from '../internal/server.js';
-import { InvalidChannelTypeError, MissingIntentsError, MissingPermissionsError } from '../error/transcriber-error.js';
+import {
+  InvalidChannelTypeError,
+  MissingIntentsError,
+  MissingPermissionsError,
+  TranscriberError,
+} from '../errors/transcriber-error.js';
 import { Transcript } from '../model/transcript.js';
 
 export const REQUIRED_INTENTS =
@@ -29,7 +34,7 @@ export const REQUIRED_PERMISSIONS = PermissionFlagsBits.ViewChannel | Permission
  * Transcribes Discord channels into natively styled HTML transcripts.
  *
  * @example
- *   const transcriber = new TranscriberClient(client); // Instantiate once
+ *   const transcriber = new TranscriberClient(client); // "client" is the discord.js instance
  *   const transcript = await transcriber.transcribe(channel);
  */
 export class TranscriberClient {
@@ -93,9 +98,10 @@ export class TranscriberClient {
 
       return new Transcript(bytes);
     } catch (error) {
-      throw new Error(
+      throw new TranscriberError(
         `Failed to generate transcript.
-        [Channel: ${guildChannel.id}, Guild: ${guildChannel.guildId}]`,
+        Channel: ${guildChannel.id}
+        Guild: ${guildChannel.guildId}`,
         { cause: error }
       );
     }
@@ -105,7 +111,7 @@ export class TranscriberClient {
    * Validates the provided {@linkcode channel}.
    *
    * @param channel The text-based guild channel to validate.
-   * @throws InvalidChannelTypeError If the provided {@linkcode channel} is not of type 0 (GuildText).
+   * @throws InvalidChannelTypeError If the provided {@linkcode channel} is not of type GuildText (0).
    * @throws MissingPermissionsError If the provided {@linkcode channel} is missing any of
    *   {@linkcode REQUIRED_PERMISSIONS}.
    */

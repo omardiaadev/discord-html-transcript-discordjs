@@ -18,8 +18,8 @@ import { Channel, ChannelType, GatewayIntentsString, GuildTextBasedChannel, Perm
 
 /** Error implementation for exceptions related to the transcriber. */
 export class TranscriberError extends Error {
-  constructor(message: string) {
-    super(message);
+  constructor(message: string, options?: ErrorOptions) {
+    super(message, options);
     this.name = this.constructor.name;
     if (Error.captureStackTrace) {
       Error.captureStackTrace(this, this.constructor);
@@ -32,7 +32,10 @@ export class MissingIntentsError extends TranscriberError {
   public readonly intents: GatewayIntentsString[];
 
   constructor(intents: GatewayIntentsString[]) {
-    super(`Client is missing [${intents.join(', ')}] intents.`);
+    super(
+      `Client is missing required intents.
+      Required Intents: ${intents.join(', ')}`
+    );
     this.intents = intents;
   }
 }
@@ -43,8 +46,10 @@ export class MissingPermissionsError extends TranscriberError {
 
   constructor(permissions: PermissionsString[], channel: GuildTextBasedChannel) {
     super(
-      `Client is missing [${permissions.join(', ')}] permissions.
-      [Channel: ${channel.id}, Guild: ${channel.guildId}]`
+      `Client is missing required permissions.
+      Required Permissions: ${permissions.join(', ')}
+      Channel: ${channel.id}
+      Guild: ${channel.guildId}`
     );
     this.permissions = permissions;
   }
@@ -53,6 +58,9 @@ export class MissingPermissionsError extends TranscriberError {
 /** Indicates that a channel's type is invalid. */
 export class InvalidChannelTypeError extends TranscriberError {
   constructor(channel: Channel, requiredType: ChannelType) {
-    super(`Channel must be of type ${requiredType}. [Channel: ${channel.id}]`);
+    super(
+      `Channel must be of type ${requiredType}.
+      Channel: ${channel.id}`
+    );
   }
 }

@@ -16,17 +16,18 @@
 
 import { writeFileSync } from 'node:fs';
 import { SERVER_CONFIG } from '../src/config.js';
+import { Logger } from '../src/internal/logger.js';
 import { checkServerDir, validateServer } from '../src/util/server-util.js';
 
-downloadServer().catch((err) => {
-  console.error(err);
+downloadServer().catch((error) => {
+  Logger.error(error);
   process.exit(0);
 });
 
 /**
  * Downloads the transcriber executable server.
  *
- * The download is skipped if any of the following applies:
+ * The download is skipped if:
  *
  * - Environment variable `TRANSCRIPT_SERVER_SKIP_DOWNLOAD` is set to `true`.
  * - NPM flag `--transcript-server-skip-download` is set to `true`.
@@ -38,18 +39,18 @@ async function downloadServer() {
   const envSkip = Boolean(process.env.TRANSCRIPT_SERVER_SKIP_DOWNLOAD);
 
   if (flagSkip || envSkip) {
-    console.log('Skipping server executable download due to configuration...');
+    Logger.info('Skipping server executable download due to configuration...');
     return;
   }
 
   try {
     validateServer();
-    console.log('Server executable exists, skipping download...');
+    Logger.info('Server executable exists, skipping download...');
   } catch {
     const { path, filename, version } = SERVER_CONFIG;
     const url = `https://github.com/omardiaadev/discord-html-transcript/releases/download/${version}/${filename}`;
 
-    console.log(`Downloading ${url}...`);
+    Logger.info(`Downloading ${url}...`);
 
     const response = await fetch(url);
 
@@ -64,7 +65,7 @@ async function downloadServer() {
       checkServerDir();
       writeFileSync(path, Buffer.from(await response.arrayBuffer()));
 
-      console.log(`Saved download: ${path}`);
+      Logger.info(`Saved download: ${path}`);
 
       validateServer();
     } catch (error) {

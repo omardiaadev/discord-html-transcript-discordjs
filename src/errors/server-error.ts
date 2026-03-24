@@ -44,8 +44,8 @@ export class ServerMismatchedVersionError extends ServerError {
   constructor(error: ServerErrorPayload) {
     super(
       `${error.message}
-      Client Expected: "${SERVER_CONFIG.version}"
-      Actual: "${error.details?.server}".`
+      Client: "${SERVER_CONFIG.version}"
+      Actual: "${error.details?.server}"`
     );
   }
 }
@@ -53,12 +53,12 @@ export class ServerMismatchedVersionError extends ServerError {
 /** @see https://github.com/omardiaadev/discord-html-transcript/blob/main/server/src/main/java/dev/omardiaa/transcript/server/exception/GlobalExceptionHandler.java */
 export class ServerAuthenticationError extends ServerError {
   constructor() {
-    super('Failed to authenticate client with the transcriber web server.');
+    super('Failed to authenticate client with the transcriber server.');
   }
 }
 
 export class ServerConnectionError extends ServerError {
   constructor(url: string, cause?: ErrorOptions) {
-    super(`Failed to reach the transcriber server at ${url}`, { cause });
+    super(`Failed to reach ${url}`, { cause });
   }
 }

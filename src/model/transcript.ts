@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { AttachmentBuilder } from 'discord.js';
+import { AttachmentBuilder, AttachmentData } from 'discord.js';
 import { writeFile } from 'node:fs/promises';
 
-/** Represents the generated HTML file as a byte output, provides utility functions. */
+/** Represents the generated transcript as byte output. */
 export class Transcript {
   private readonly output;
 
@@ -38,12 +38,15 @@ export class Transcript {
   /**
    * Writes {@linkcode output} into a discord.js {@linkcode AttachmentBuilder}.
    *
-   * @param filename The name to use for {@linkcode AttachmentBuilder}.\
+   * @param name The data to use for {@linkcode AttachmentBuilder}.\
+   *   If the name does not end with `.html`, it will be appended automatically.
+   * @param data The data to use for {@linkcode AttachmentBuilder}.\
    *   If the name does not end with `.html`, it will be appended automatically.
    * @returns {@linkcode AttachmentBuilder} To use directly in discord.js interactions.
    */
-  public toAttachmentBuilder(filename: string = 'transcript.html'): AttachmentBuilder {
-    const name = filename.toLowerCase().endsWith('.html') ? filename : `${filename}.html`;
-    return new AttachmentBuilder(Buffer.from(this.output), { name });
+  public toAttachmentBuilder({ name = 'transcript.html', ...data }: AttachmentData = {}): AttachmentBuilder {
+    const fileName = name.toLowerCase().endsWith('.html') ? name : `${name}.html`;
+    const buffer = Buffer.from(this.output.buffer, this.output.byteOffset, this.output.byteLength);
+    return new AttachmentBuilder(buffer, { ...data, name: fileName });
   }
 }

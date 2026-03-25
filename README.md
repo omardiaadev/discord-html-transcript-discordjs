@@ -1,14 +1,14 @@
 <h1 align="center">discord-html-transcript-discordjs</h1>
 
 <p align="center">
-    <strong>Generate natively styled logs for your Discord chats using discord.js</strong>
+    <strong>Generate natively styled logs for Discord chats with discord.js</strong>
     <br>
     <a href="https://github.com/discordjs/discord.js">discord.js</a> wrapper for <a href="https://github.com/omardiaadev/discord-html-transcript">discord-html-transcript</a>
 </p>
 
 <p align="center">
-    <a href="https://github.com/omardiaadev/discord-html-transcript-discordjs/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/omardiaadev/discord-html-transcript-discordjs?label=License&labelColor=05122A&color=05122A"></a>
-    <a href="https://discord.gg/fWtQjEJgWX"><img alt="Discord" src="https://img.shields.io/badge/Discord-5865F2?logo=discord&logoColor=FFF&color=5865F2"></a>
+    <a href="https://github.com/omardiaadev/discord-html-transcript-discordjs/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/omardiaadev/discord-html-transcript-discordjs?label=License&color=0055D2"></a>
+    <a href="https://discord.omardiaa.dev"><img alt="Discord" src="https://img.shields.io/badge/Discord-5865F2?logo=discord&logoColor=FFF&color=5865F2"></a>
 </p>
 
 <details>
@@ -103,51 +103,50 @@ const transcriber = new TranscriberClient(client, {
 
 ### Example: Slash Command
 
-> [!NOTE]
-> This section of the documentation is incomplete.
-
 ```javascript
-import {Client, Events, GatewayIntentBits} from 'discord.js';
-import TranscriberClient from 'discord-html-transcript-discordjs';
+import {REQUIRED_INTENTS, TranscriberClient} from 'discord-html-transcript-discordjs';
+import {Client, Events, MessageFlags, Routes, SlashCommandBuilder} from 'discord.js';
 
-const client = new Client({
-    intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers, GatewayIntentBits.MessageContent],
-});
-
+const client = new Client({intents: REQUIRED_INTENTS});
 const transcriber = new TranscriberClient(client);
 
 client.once(Events.ClientReady, (readyClient) => console.log(`Logged in as ${readyClient.user.tag}`));
 
 client.on(Events.InteractionCreate, async (interaction) => {
     if (!interaction.isChatInputCommand()) return;
-    if (!interaction.commandName !== 'transcript') return;
 
     const {channel} = interaction;
 
-    // Safely retrieve the channel
+    // safely retrieve the channel
     if (!channel) {
-        await interaction.reply({content: 'Failed to retrieve channel.', ephemeral: true});
+        await interaction.reply({
+            content: 'Failed to retrieve channel.',
+            flags: MessageFlags.Ephemeral,
+        });
         return;
     }
 
-    // Safely check the channel's type
+    // safely check the channel's type
     if (channel.isDMBased() || !channel.isTextBased) {
-        await interaction.reply({content: 'This command can only be used in guild text channels.', ephemeral: true});
+        await interaction.reply({
+            content: 'This command can only be used in guild text channels.',
+            flags: MessageFlags.Ephemeral,
+        });
         return;
     }
 
     try {
-        // Acknowledge the interaction before Discord expires it
-        // This is required in instances where a channel may have a large amount of messages to retrieve
-        await interaction.deferReply();
+        // acknowledge the interaction before Discord expires it
+        // this is required in instances where a channel may have a large amount of messages to retrieve
+        await interaction.deferReply({flags: MessageFlags.Ephemeral});
 
         const transcript = await transcriber.transcribe(channel);
-        const attachment = transcript.toAttachmentBuilder(channel.name);
+        const attachment = transcript.toAttachmentBuilder({name: channel.name});
 
-        // Send the generated transcript
-        await interaction.editReply({files: [attachment]});
-    } catch (err) {
-        await interaction.editReply({content: 'Failed to generate transcript.'});
+        // send the generated transcript
+        await interaction.followUp({files: [attachment]});
+    } catch (error) {
+        await interaction.followUp({content: 'Failed to generate transcript.'});
     }
 });
 

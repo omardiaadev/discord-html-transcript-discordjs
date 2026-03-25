@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { Channel, ChannelType, GatewayIntentsString, GuildTextBasedChannel, PermissionsString } from 'discord.js';
+import { Channel, GatewayIntentsString, GuildTextBasedChannel, PermissionsString } from 'discord.js';
 
-/** Error implementation for exceptions related to the transcriber. */
+/** Error implementation for the transcriber errors. */
 export class TranscriberError extends Error {
   constructor(message: string, options?: ErrorOptions) {
     super(message, options);
@@ -27,8 +27,8 @@ export class TranscriberError extends Error {
   }
 }
 
-/** Indicates that the discord.js client instance used is missing required intents. */
-export class MissingIntentsError extends TranscriberError {
+/** Indicates that the provided discord.js instance is missing required intents. */
+export class TranscriberMissingIntentsError extends TranscriberError {
   public readonly intents: GatewayIntentsString[];
 
   constructor(intents: GatewayIntentsString[]) {
@@ -40,8 +40,8 @@ export class MissingIntentsError extends TranscriberError {
   }
 }
 
-/** Indicates that the discord.js client instance used is missing required permissions. */
-export class MissingPermissionsError extends TranscriberError {
+/** Indicates that the provided discord.js instance is missing required permissions. */
+export class TranscriberMissingPermissionsError extends TranscriberError {
   public readonly permissions: PermissionsString[];
 
   constructor(permissions: PermissionsString[], channel: GuildTextBasedChannel) {
@@ -55,11 +55,11 @@ export class MissingPermissionsError extends TranscriberError {
   }
 }
 
-/** Indicates that a channel's type is invalid. */
-export class InvalidChannelTypeError extends TranscriberError {
-  constructor(channel: Channel, requiredType: ChannelType) {
+/** Indicates that the provided channel's type is invalid. */
+export class TranscriberInvalidChannelTypeError extends TranscriberError {
+  constructor(channel: Channel) {
     super(
-      `Channel must be of type ${requiredType}.
+      `Channel must be of type GUILD_TEXT (0).
       Channel: ${channel.id}`
     );
   }

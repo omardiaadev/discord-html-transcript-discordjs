@@ -17,7 +17,6 @@
 import { ChildProcess, spawn } from 'node:child_process';
 import {
   ServerAuthenticationError,
-  ServerConnectionError,
   ServerError,
   ServerMismatchedInputError,
   ServerMismatchedVersionError,
@@ -98,7 +97,7 @@ export class Server {
    * Starts the server and waits its readiness.
    *
    * If an `externalUrl` was provided in the initialization options, this method will attempt to connect to that
-   * external server. Otherwise, it spawns a local server process using The configured `host` and `port`.
+   * external server. Otherwise, it spawns a local server process using the provided `host` and `port`.
    *
    * @returns A promise that resolves with the readiness of the server.
    * @throws ServerError If the server cannot be reached.
@@ -219,13 +218,7 @@ export class Server {
     const response = await fetch(url, { ...init, headers });
 
     if (!response.ok) {
-      let error: ServerErrorPayload | undefined;
-
-      try {
-        error = (await response.json()) as ServerErrorPayload;
-      } catch {
-        throw new ServerConnectionError(this.config.url);
-      }
+      const error = (await response.json()) as ServerErrorPayload;
 
       switch (response.status) {
         case 400:
@@ -235,7 +228,7 @@ export class Server {
         case 409:
           throw new ServerMismatchedVersionError(error);
         default:
-          throw new ServerConnectionError(this.config.url);
+          throw new ServerError(`Failed to reach server at ${this.config.url}`, { cause: error });
       }
     }
 

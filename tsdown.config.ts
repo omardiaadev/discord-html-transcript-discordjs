@@ -18,8 +18,8 @@ import { defineConfig } from 'tsdown';
 
 export default defineConfig([
   {
-    entry: './src/index.ts',
-    outDir: './dist',
+    entry: 'src/index.ts',
+    outDir: 'dist',
     format: ['esm', 'cjs'],
     sourcemap: true,
     shims: true,
@@ -27,8 +27,8 @@ export default defineConfig([
     clean: true,
   },
   {
-    entry: './scripts/download-server.ts',
-    outDir: './dist/scripts',
+    entry: 'scripts/download-server.ts',
+    outDir: 'dist/scripts',
     sourcemap: false,
     shims: true,
     dts: false,

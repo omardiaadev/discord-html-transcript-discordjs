@@ -5,7 +5,10 @@
     "moduleResolution": "nodenext",
     "types": ["node", "jest"],
     "outDir": "./dist",
+    "rootDir": "./src",
+    // Strictness
     "strict": true,
+    // Build
     "skipLibCheck": true,
     "sourceMap": true,
     "declaration": true,
@@ -14,6 +17,6 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src/**/*", "scripts/**/*"],
+  "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
 }

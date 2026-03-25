@@ -17,7 +17,7 @@
 import { ServerErrorPayload } from '../types.js';
 import { SERVER_CONFIG } from '../config.js';
 
-/** Error implementation for exceptions related to the transcriber server. */
+/** Error implementation for the server errors. */
 export class ServerError extends Error {
   constructor(message: string, options?: ErrorOptions) {
     super(message, options);
@@ -54,11 +54,5 @@ export class ServerMismatchedVersionError extends ServerError {
 export class ServerAuthenticationError extends ServerError {
   constructor() {
     super('Failed to authenticate client with the transcriber server.');
-  }
-}
-
-export class ServerConnectionError extends ServerError {
-  constructor(url: string, cause?: ErrorOptions) {
-    super(`Failed to reach ${url}`, { cause });
   }
 }

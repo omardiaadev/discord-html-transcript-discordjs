@@ -15,7 +15,6 @@
  */
 
 import { ChildProcess, spawn } from 'node:child_process';
-import { SERVER_CONFIG } from '../config.js';
 import {
   ServerAuthenticationError,
   ServerConnectionError,
@@ -23,8 +22,9 @@ import {
   ServerMismatchedInputError,
   ServerMismatchedVersionError,
 } from '../errors/server-error.js';
-import { ServerErrorPayload, TranscriberPayload } from '../types.js';
 import { validateServer } from '../util/server-util.js';
+import { SERVER_CONFIG } from '../config.js';
+import { ServerErrorPayload, TranscriberPayload } from '../types.js';
 import { Logger } from './logger.js';
 
 enum Status {
@@ -128,7 +128,7 @@ export class Server {
 
     await this.checkReady();
     this.status = Status.Started;
-    Logger.info(`Started server at ${this.config.url}`);
+    Logger.info(`Started local server at ${this.config.url}`);
   }
 
   /**

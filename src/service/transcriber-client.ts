@@ -15,14 +15,14 @@
  */
 
 import { ChannelType, Client, GatewayIntentBits, GuildTextBasedChannel, PermissionFlagsBits } from 'discord.js';
-import { TranscriberClientFetcher } from '../internal/transcriber-client-fetcher.js';
-import { Server, ServerOptions } from '../internal/server.js';
 import {
   InvalidChannelTypeError,
   MissingIntentsError,
   MissingPermissionsError,
   TranscriberError,
 } from '../errors/transcriber-error.js';
+import { TranscriberClientFetcher } from '../internal/transcriber-client-fetcher.js';
+import { Server, ServerOptions } from '../internal/server.js';
 import { Transcript } from '../model/transcript.js';
 
 export const REQUIRED_INTENTS =

@@ -1,7 +1,7 @@
 {
   "name": "discord-html-transcript-discordjs",
   "version": "0.1.0-beta.1",
-  "description": "Generate natively styled logs for your Discord chats using discord.js",
+  "description": "Generate natively styled logs for Discord chats with discord.js",
   "keywords": [
     "discord",
     "discordjs",

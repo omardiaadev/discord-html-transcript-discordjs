@@ -17,8 +17,8 @@
 import { mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { Client, Events, GuildTextBasedChannel } from 'discord.js';
-import { Logger } from '../internal/logger.js';
 import { REQUIRED_INTENTS, TranscriberClient } from './transcriber-client.js';
+import { Logger } from '../internal/logger.js';
 
 const client = new Client({ intents: REQUIRED_INTENTS });
 const transcriber = new TranscriberClient(client);

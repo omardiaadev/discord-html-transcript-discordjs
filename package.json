@@ -5,6 +5,8 @@
   "keywords": [
     "discord",
     "discordjs",
+    "discord-logs",
+    "discord-tickets",
     "discord-transcripts"
   ],
   "homepage": "https://github.com/omardiaadev/discord-html-transcript-discordjs",
@@ -62,6 +64,10 @@
     "node": ">=24.14.0"
   },
   "packageManager": "pnpm@10.33.0",
+  "publishConfig": {
+    "access": "public",
+    "tag": "beta"
+  },
   "server": {
     "version": "0.1.0-beta.4"
   }

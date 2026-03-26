@@ -3,7 +3,7 @@
 <p align="center">
     <strong>Generate natively styled logs for Discord chats with discord.js</strong>
     <br>
-    <img src="https://avatars.githubusercontent.com/u/26492485" height="12"> discord.js wrapper for <a href="https://github.com/omardiaadev/discord-html-transcript">discord-html-transcript</a>
+    discord.js wrapper for <a href="https://github.com/omardiaadev/discord-html-transcript">discord-html-transcript</a>
 </p>
 
 <p align="center">
@@ -13,7 +13,7 @@
 </p>
 
 <details>
-    <summary><b>Table of Contents</b></summary>
+    <summary>Table of Contents</summary>
     <ul>
         <li><a href="#features">Features</a></li>
         <li><a href="#preview">Preview</a></li>
@@ -26,7 +26,7 @@
 
 ## Features
 
-- **discord.js Integration:** Retrieve channel messages seamlessly with your discord.js client instance.
+- **discord.js Integration:** Retrieve messages seamlessly with your discord.js client instance.
 - **Beautiful UI:** Modern HTML and CSS that has the look and feel of the Discord desktop client.
 
 ## Preview
@@ -98,7 +98,7 @@ You must provide the URL to your externally hosted transcript server.
 ```javascript
 const transcriber = new TranscriberClient(client, {
     externalUrl: 'https://your-server-url',
-    apiKey: 'your-secret-key' // Required if your server requires authentication
+    apiKey: 'your-secret-key' // required if the server requires authentication
 });
 ```
 

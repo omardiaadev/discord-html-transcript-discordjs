@@ -3,10 +3,11 @@
 <p align="center">
     <strong>Generate natively styled logs for Discord chats with discord.js</strong>
     <br>
-    <a href="https://github.com/discordjs/discord.js">discord.js</a> wrapper for <a href="https://github.com/omardiaadev/discord-html-transcript">discord-html-transcript</a>
+    <img src="https://avatars.githubusercontent.com/u/26492485" height="12"> discord.js wrapper for <a href="https://github.com/omardiaadev/discord-html-transcript">discord-html-transcript</a>
 </p>
 
 <p align="center">
+    <a href="https://npmjs.com/discord-html-transcript-discordjs"><img alt="npm" src="https://img.shields.io/npm/v/discord-html-transcript-discordjs?color=0055D2"></a>
     <a href="https://github.com/omardiaadev/discord-html-transcript-discordjs/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/omardiaadev/discord-html-transcript-discordjs?label=License&color=0055D2"></a>
     <a href="https://discord.omardiaa.dev"><img alt="Discord" src="https://img.shields.io/badge/Discord-5865F2?logo=discord&logoColor=FFF&color=5865F2"></a>
 </p>
@@ -26,7 +27,7 @@
 ## Features
 
 - **discord.js Integration:** Retrieve channel messages seamlessly with your discord.js client instance.
-- **Beautiful UI:** Modern HTML/CSS that has the look and feel of the Discord desktop client.
+- **Beautiful UI:** Modern HTML and CSS that has the look and feel of the Discord desktop client.
 
 ## Preview
 

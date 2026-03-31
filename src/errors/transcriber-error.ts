@@ -16,7 +16,7 @@
 
 import { Channel, GatewayIntentsString, GuildTextBasedChannel, PermissionsString } from 'discord.js';
 
-/** Error implementation for the transcriber errors. */
+/** Server error implementation. */
 export class TranscriberError extends Error {
   constructor(message: string, options?: ErrorOptions) {
     super(message, options);

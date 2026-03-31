@@ -15,9 +15,8 @@
  */
 
 import { ServerErrorPayload } from '../types.js';
-import { SERVER_CONFIG } from '../config.js';
 
-/** Error implementation for the server errors. */
+/** Server error implementation. */
 export class ServerError extends Error {
   constructor(message: string, options?: ErrorOptions) {
     super(message, options);
@@ -44,8 +43,8 @@ export class ServerMismatchedVersionError extends ServerError {
   constructor(error: ServerErrorPayload) {
     super(
       `${error.message}
-      Client: "${SERVER_CONFIG.version}"
-      Actual: "${error.details?.server}"`
+      Client: "${error.details?.client}"
+      Server: "${error.details?.server}"`
     );
   }
 }

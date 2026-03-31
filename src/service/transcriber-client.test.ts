@@ -16,43 +16,46 @@
 
 import { mkdirSync } from 'node:fs';
 import { join } from 'node:path';
+import { after, before, suite, test } from 'node:test';
 import { Client, Events, GuildTextBasedChannel } from 'discord.js';
 import { REQUIRED_INTENTS, TranscriberClient } from './transcriber-client.js';
 import { Logger } from '../internal/logger.js';
 
-const client = new Client({ intents: REQUIRED_INTENTS });
-const transcriber = new TranscriberClient(client);
+await suite(
+  'TranscriberClient',
+  {
+    timeout: 30000,
+    skip:
+      (!process.env.DISCORD_BOT_TOKEN && 'Missing DISCORD_BOT_TOKEN environment variable.') ||
+      (!process.env.DISCORD_CHANNEL_ID && 'Missing DISCORD_CHANNEL_ID environment variable.'),
+  },
+  () => {
+    const client = new Client({ intents: REQUIRED_INTENTS });
+    const transcriber = new TranscriberClient(client);
 
-beforeAll(async () => {
-  if (!process.env.DISCORD_BOT_TOKEN) {
-    throw new Error('Missing DISCORD_BOT_TOKEN environment variable.');
+    before(async () => {
+      client.once(Events.ClientReady, (client) => Logger.info(`Logged in as ${client.user.tag}`));
+
+      await client.login(process.env.DISCORD_BOT_TOKEN);
+      await transcriber.start();
+    });
+
+    after(async () => {
+      await client.destroy();
+      transcriber.stop();
+    });
+
+    test('shouldTranscribe', async () => {
+      const channel = await client.channels.fetch(process.env.DISCORD_CHANNEL_ID!, { force: true });
+
+      const transcriptDir = join(process.cwd(), 'temp');
+      mkdirSync(transcriptDir, { recursive: true });
+      const transcriptPath = join(transcriptDir, 'transcript.html');
+
+      const transcript = await transcriber.transcribe(channel as GuildTextBasedChannel);
+      await transcript.toFile(transcriptPath);
+
+      Logger.info(`Saved file:${transcriptPath}`);
+    });
   }
-
-  if (!process.env.DISCORD_CHANNEL_ID) {
-    throw new Error('Missing DISCORD_CHANNEL_ID environment variable.');
-  }
-
-  await transcriber.start();
-  await client.login(process.env.DISCORD_BOT_TOKEN);
-
-  client.once(Events.ClientReady, (readyClient) => Logger.info(`Logged in as ${readyClient.user.tag}`));
-}, 30000);
-
-afterAll(async () => {
-  await client.destroy();
-  transcriber.stop();
-});
-
-test('shouldCreateTranscript', async () => {
-  const channel = await client.channels.fetch(process.env.DISCORD_CHANNEL_ID as string, { force: true });
-
-  const transcript = await transcriber.transcribe(channel as GuildTextBasedChannel);
-  const transcriptDir = join(process.cwd(), 'temp');
-
-  mkdirSync(transcriptDir, { recursive: true });
-
-  const transcriptPath = join(transcriptDir, 'transcript.html');
-  await transcript.toFile(transcriptPath);
-
-  Logger.info(`Saved file://${transcriptPath}`);
-}, 30000);
+);

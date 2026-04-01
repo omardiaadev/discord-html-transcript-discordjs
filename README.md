@@ -160,6 +160,8 @@ await client.login(process.env.DISCORD_BOT_TOKEN);
 
 Need help? Wanna request a feature? [Join us today](https://discord.omardiaa.dev)!
 
+<h1></h1>
+
 <div align="center">
     <p>Made with ❤️ by <a href="https://github.com/omardiaadev"><b>Omar Diaa</b></a></p>
     <a href="https://fiverr.com/skywolfxp"><img alt="Fiverr" src="https://img.shields.io/badge/-1DBF73?style=for-the-badge&logo=fiverr&logoColor=FFF&logoSize=auto"></a>

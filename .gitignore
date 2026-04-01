@@ -5,10 +5,10 @@ dist/
 # NPM
 *.tgz
 
-# IntelliJ IDEA
+# JetBrains
 .idea/
 
-# Misc
+# Other
 bin/
 temp/
 .env

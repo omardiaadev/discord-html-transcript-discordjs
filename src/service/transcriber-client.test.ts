@@ -18,8 +18,9 @@ import { mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { after, before, suite, test } from 'node:test';
 import { Client, Events, GuildTextBasedChannel } from 'discord.js';
-import { REQUIRED_INTENTS, TranscriberClient } from './transcriber-client.js';
 import { Logger } from '../internal/logger.js';
+import { TranscriberClient } from './transcriber-client.js';
+import { REQUIRED_INTENTS } from '../util/transcriber-util.js';
 
 await suite(
   'TranscriberClient',

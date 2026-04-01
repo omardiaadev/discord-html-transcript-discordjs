@@ -15,6 +15,7 @@
  */
 
 export * from './service/transcriber-client.js';
+export { REQUIRED_INTENTS, REQUIRED_PERMISSIONS } from './util/transcriber-util.js';
 export * from './errors/transcriber-error.js';
 export * from './errors/server-error.js';
 export * from './model/transcript.js';

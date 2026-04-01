@@ -14,35 +14,21 @@
  * limitations under the License.
  */
 
-import { ChannelType, Client, GatewayIntentBits, GuildTextBasedChannel, PermissionFlagsBits } from 'discord.js';
-import {
-  TranscriberError,
-  TranscriberInvalidChannelTypeError,
-  TranscriberMissingIntentsError,
-  TranscriberMissingPermissionsError,
-} from '../errors/transcriber-error.js';
+import { Client, GuildTextBasedChannel } from 'discord.js';
+import { TranscriberError } from '../errors/transcriber-error.js';
 import { TranscriberFetcher } from '../internal/transcriber-fetcher.js';
 import { Server, ServerOptions } from '../internal/server.js';
 import { Transcript } from '../model/transcript.js';
+import { ServerError } from '../errors/server-error.js';
+import { checkChannel, checkClient } from '../util/transcriber-util.js';
 
-export const REQUIRED_INTENTS =
-  GatewayIntentBits.Guilds | GatewayIntentBits.GuildMembers | GatewayIntentBits.MessageContent;
-
-export const REQUIRED_PERMISSIONS = PermissionFlagsBits.ViewChannel | PermissionFlagsBits.ReadMessageHistory;
-
-/**
- * Transcribes Discord channels into natively styled HTML transcripts.
- *
- * @example
- *   const transcriber = new TranscriberClient(client); // "client" is the discord.js instance
- *   const transcript = await transcriber.transcribe(channel);
- */
+/** Transcribes Discord channels into natively styled HTML transcripts. */
 export class TranscriberClient {
   private readonly server: Server;
-  private readonly transcriberFetcher: TranscriberFetcher;
+  private readonly fetcher: TranscriberFetcher;
 
   /**
-   * Creates a new instance of {@linkcode TranscriberClient}.
+   * Constructs a new {@linkcode TranscriberClient} instance.
    *
    * @param client The discord.js client instance.
    * @param serverOptions The options used to initialize the {@linkcode Server}.
@@ -50,13 +36,9 @@ export class TranscriberClient {
    *   {@linkcode REQUIRED_INTENTS}.
    */
   constructor(client: Client, serverOptions?: ServerOptions) {
-    if (!client.options.intents.has(REQUIRED_INTENTS)) {
-      const missingIntents = client.options.intents.missing(REQUIRED_INTENTS);
-      throw new TranscriberMissingIntentsError(missingIntents);
-    }
-
+    checkClient(client);
     this.server = new Server(serverOptions);
-    this.transcriberFetcher = new TranscriberFetcher(client);
+    this.fetcher = new TranscriberFetcher(client);
   }
 
   /** Starts the server and waits for it to initialize. */
@@ -76,21 +58,21 @@ export class TranscriberClient {
    * @returns A promise that resolves with a {@link Transcript}.
    * @throws TranscriberMissingPermissionsError If the provided {@linkcode client} instance lacks permissions in the
    *   provided {@linkcode guildChannel}.
-   * @throws Error If the provided {@linkcode client} encountered an error while retrieving the payload, or the
-   *   transcript web server fails.
+   * @throws TranscriberError If the provided {@linkcode client} encounters an error while retrieving the payload.
+   * @throws ServerError If the transcriber server encounters an error while requesting the transcript file.
    */
   public async transcribe(guildChannel: GuildTextBasedChannel): Promise<Transcript> {
     if (!this.server.isReady()) {
-      throw new Error('Transcriber server is stopped. Did you forget to call "await transcriber.start()"?');
+      throw new ServerError('Server is stopped. Did you forget to call "await transcriber.start()"?');
     }
 
-    await this.validateChannel(guildChannel);
+    await checkChannel(guildChannel);
 
     try {
       const [guild, channel, messages] = await Promise.all([
-        this.transcriberFetcher.getGuild(guildChannel.guildId),
-        this.transcriberFetcher.getChannel(guildChannel.id),
-        this.transcriberFetcher.getMessages(guildChannel.id),
+        this.fetcher.getGuild(guildChannel.guildId),
+        this.fetcher.getChannel(guildChannel.id),
+        this.fetcher.getMessages(guildChannel.id),
       ]);
 
       const response = await this.server.fetchTranscript({ guild, channel, messages });
@@ -104,27 +86,6 @@ export class TranscriberClient {
         Guild: ${guildChannel.guildId}`,
         { cause: error }
       );
-    }
-  }
-
-  /**
-   * Validates the provided {@linkcode channel}.
-   *
-   * @param channel The text-based guild channel to validate.
-   * @throws TranscriberInvalidChannelTypeError If the provided {@linkcode channel} is not of type GuildText (0).
-   * @throws TranscriberMissingPermissionsError If the provided {@linkcode channel} is missing any of
-   *   {@linkcode REQUIRED_PERMISSIONS}.
-   */
-  private async validateChannel(channel: GuildTextBasedChannel): Promise<void> {
-    if (channel.type !== ChannelType.GuildText) {
-      throw new TranscriberInvalidChannelTypeError(channel);
-    }
-
-    const member = channel.guild.members.me ?? (await channel.guild.members.fetchMe());
-
-    if (!member.permissionsIn(channel).has(REQUIRED_PERMISSIONS)) {
-      const missingPermissions = member.permissionsIn(channel).missing(REQUIRED_PERMISSIONS);
-      throw new TranscriberMissingPermissionsError(missingPermissions, channel);
     }
   }
 }

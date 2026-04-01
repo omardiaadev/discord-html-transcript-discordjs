@@ -38,15 +38,15 @@ export class Transcript {
   /**
    * Writes {@linkcode output} into a discord.js {@linkcode AttachmentBuilder}.
    *
-   * @param name The data to use for {@linkcode AttachmentBuilder}.\
-   *   If the name does not end with `.html`, it will be appended automatically.
-   * @param data The data to use for {@linkcode AttachmentBuilder}.\
-   *   If the name does not end with `.html`, it will be appended automatically.
+   * If the provided {@linkcode name} does not end with `.html`, it will be appended automatically.
+   *
+   * @param name The filename to use for the {@linkcode AttachmentBuilder}.
+   * @param data The data to use for the {@linkcode AttachmentBuilder}.
    * @returns {@linkcode AttachmentBuilder} To use directly in discord.js interactions.
    */
   public toAttachmentBuilder({ name = 'transcript.html', ...data }: AttachmentData = {}): AttachmentBuilder {
-    const fileName = name.toLowerCase().endsWith('.html') ? name : `${name}.html`;
+    const filename = name.toLowerCase().endsWith('.html') ? name : `${name}.html`;
     const buffer = Buffer.from(this.output.buffer, this.output.byteOffset, this.output.byteLength);
-    return new AttachmentBuilder(buffer, { ...data, name: fileName });
+    return new AttachmentBuilder(buffer, { ...data, name: filename });
   }
 }

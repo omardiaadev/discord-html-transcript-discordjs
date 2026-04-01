@@ -35,7 +35,7 @@ await suite(
     const transcriber = new TranscriberClient(client);
 
     before(async () => {
-      client.once(Events.ClientReady, (client) => Logger.info(`Logged in as ${client.user.tag}`));
+      client.once(Events.ClientReady, (readyClient) => Logger.info(`Logged in as ${readyClient.user.tag}`));
 
       await client.login(process.env.DISCORD_BOT_TOKEN);
       await transcriber.start();

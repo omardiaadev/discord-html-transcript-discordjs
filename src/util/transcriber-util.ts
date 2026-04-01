@@ -25,6 +25,13 @@ export const REQUIRED_INTENTS =
   GatewayIntentBits.Guilds | GatewayIntentBits.GuildMembers | GatewayIntentBits.MessageContent;
 export const REQUIRED_PERMISSIONS = PermissionFlagsBits.ViewChannel | PermissionFlagsBits.ReadMessageHistory;
 
+/**
+ * Checks the provided {@linkcode client}.
+ *
+ * @param client The discord.js instance.
+ * @throws TranscriberMissingIntentsError If the provided {@linkcode client} is missing any of
+ *   {@linkcode REQUIRED_INTENTS}.
+ */
 export function checkClient(client: Client) {
   if (!client.options.intents.has(REQUIRED_INTENTS)) {
     const missingIntents = client.options.intents.missing(REQUIRED_INTENTS);
@@ -35,7 +42,7 @@ export function checkClient(client: Client) {
 /**
  * Checks the provided {@linkcode channel}.
  *
- * @param channel The text-based guild channel to validate.
+ * @param channel The text-based guild channel to check.
  * @throws TranscriberInvalidChannelTypeError If the provided {@linkcode channel} is not of type GuildText (0).
  * @throws TranscriberMissingPermissionsError If the provided {@linkcode channel} is missing any of
  *   {@linkcode REQUIRED_PERMISSIONS}.

@@ -20,7 +20,6 @@
         <li><a href="#getting-started">Getting Started</a></li>
         <li><a href="#usage">Usage</a></li>
         <li><a href="#contributing">Contributing</a></li>
-        <li><a href="#support">Support</a></li>
     </ul>
 </details>
 
@@ -74,7 +73,7 @@ configuration flag.
 - **Node.js v24.14.0+**
 - **discord.js v14+**
 - `Guilds`, `GuildMembers`, `MessageContent`
-  [intents](https://discordjs.guide/legacy/popular-topics/intents#enabling-intents) enabled.
+  [intents](https://docs.discord.com/developers/quick-start/getting-started#what-are-intents) enabled.
 
 ### Configuration
 
@@ -155,13 +154,14 @@ await transcriber.start();
 await client.login(process.env.DISCORD_BOT_TOKEN);
 ```
 
-## [Contributing](CONTRIBUTING.md)
+## Contributing
+
+**If you found discord-html-transcript-discordjs useful, please consider giving it a 🌟!**
 
 Need help? Wanna request a feature? [Join us today](https://discord.omardiaa.dev)!
 
-## Support
-
-If you found this useful, please consider giving it a 🌟!
-
-<a href="https://fiverr.com/skywolfxp"><img alt="Fiverr" src="https://img.shields.io/badge/-1DBF73?style=for-the-badge&logo=fiverr&logoColor=FFF&logoSize=auto"></a>
-<a href="https://ko-fi.com/omardiaadev"><img alt="Ko-fi" src="https://img.shields.io/badge/ko--fi-FF6433?style=for-the-badge&logo=kofi&logoColor=FFF"></a>
+<div align="center">
+    <p>Made with ❤️ by <a href="https://github.com/omardiaadev"><b>Omar Diaa</b></a></p>
+    <a href="https://fiverr.com/skywolfxp"><img alt="Fiverr" src="https://img.shields.io/badge/-1DBF73?style=for-the-badge&logo=fiverr&logoColor=FFF&logoSize=auto"></a>
+    <a href="https://ko-fi.com/omardiaadev"><img alt="Ko-fi" src="https://img.shields.io/badge/ko--fi-FF6433?style=for-the-badge&logo=kofi&logoColor=FFF"></a>
+</div>

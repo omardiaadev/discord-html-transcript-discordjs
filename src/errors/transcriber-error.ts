@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { Channel, GatewayIntentsString, GuildTextBasedChannel, PermissionsString } from 'discord.js';
+import { Channel, GatewayIntentsString, GuildChannel, PermissionsString } from 'discord.js';
 
-/** Server error implementation. */
+/** Transcriber error implementation. */
 export class TranscriberError extends Error {
   constructor(message: string, options?: ErrorOptions) {
     super(message, options);
@@ -29,29 +29,29 @@ export class TranscriberError extends Error {
 
 /** Indicates that the provided discord.js instance is missing required intents. */
 export class TranscriberMissingIntentsError extends TranscriberError {
-  public readonly intents: GatewayIntentsString[];
+  public readonly missingIntents: GatewayIntentsString[];
 
-  constructor(intents: GatewayIntentsString[]) {
+  constructor(missingIntents: GatewayIntentsString[]) {
     super(
       `Client is missing required intents.
-      Required Intents: ${intents.join(', ')}`
+      Required Intents: ${missingIntents.join(', ')}`
     );
-    this.intents = intents;
+    this.missingIntents = missingIntents;
   }
 }
 
 /** Indicates that the provided discord.js instance is missing required permissions. */
 export class TranscriberMissingPermissionsError extends TranscriberError {
-  public readonly permissions: PermissionsString[];
+  public readonly missingPermissions: PermissionsString[];
 
-  constructor(permissions: PermissionsString[], channel: GuildTextBasedChannel) {
+  constructor(missingPermissions: PermissionsString[], channel: GuildChannel) {
     super(
       `Client is missing required permissions.
-      Required Permissions: ${permissions.join(', ')}
+      Required Permissions: ${missingPermissions.join(', ')}
       Channel: ${channel.id}
       Guild: ${channel.guildId}`
     );
-    this.permissions = permissions;
+    this.missingPermissions = missingPermissions;
   }
 }
 

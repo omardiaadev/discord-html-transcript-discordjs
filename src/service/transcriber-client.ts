@@ -21,7 +21,7 @@ import {
   TranscriberMissingIntentsError,
   TranscriberMissingPermissionsError,
 } from '../errors/transcriber-error.js';
-import { TranscriberClientFetcher } from '../internal/transcriber-client-fetcher.js';
+import { TranscriberFetcher } from '../internal/transcriber-fetcher.js';
 import { Server, ServerOptions } from '../internal/server.js';
 import { Transcript } from '../model/transcript.js';
 
@@ -39,7 +39,7 @@ export const REQUIRED_PERMISSIONS = PermissionFlagsBits.ViewChannel | Permission
  */
 export class TranscriberClient {
   private readonly server: Server;
-  private readonly transcriberFetcher: TranscriberClientFetcher;
+  private readonly transcriberFetcher: TranscriberFetcher;
 
   /**
    * Creates a new instance of {@linkcode TranscriberClient}.
@@ -56,7 +56,7 @@ export class TranscriberClient {
     }
 
     this.server = new Server(serverOptions);
-    this.transcriberFetcher = new TranscriberClientFetcher(client);
+    this.transcriberFetcher = new TranscriberFetcher(client);
   }
 
   /** Starts the server and waits for it to initialize. */

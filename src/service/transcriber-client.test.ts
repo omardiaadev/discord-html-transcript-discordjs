@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { mkdirSync } from 'node:fs';
 import { join } from 'node:path';
+import { mkdir } from 'node:fs/promises';
 import { after, before, suite, test } from 'node:test';
 import { Client, Events, GuildTextBasedChannel } from 'discord.js';
 import { Logger } from '../internal/logger.js';
@@ -50,7 +50,7 @@ await suite(
       const channel = await client.channels.fetch(process.env.DISCORD_CHANNEL_ID!, { force: true });
 
       const transcriptDir = join(process.cwd(), 'temp');
-      mkdirSync(transcriptDir, { recursive: true });
+      await mkdir(transcriptDir, { recursive: true });
       const transcriptPath = join(transcriptDir, 'transcript.html');
 
       const transcript = await transcriber.transcribe(channel as GuildTextBasedChannel);

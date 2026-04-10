@@ -29,7 +29,7 @@ local environment running.
 
 #### Prerequisites
 
-- **Node.js v24.14.0+**
+- **Node.js** v24.14.0 or higher
 
 #### Clone
 
@@ -45,7 +45,7 @@ local environment running.
 #### package.json
 
 This package requires specific `package.json` configuration to function correctly.
-A custom JSON property `server` is required in order to resolve the executable server's version.
+A custom JSON property `server` is required in order to resolve the server's version.
 
 - Example
     ```json

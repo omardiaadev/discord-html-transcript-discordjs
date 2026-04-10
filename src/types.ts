@@ -16,14 +16,30 @@
 
 import { APIGuild, APIGuildTextChannel, APIMessage, GuildTextChannelType } from 'discord.js';
 
-export type TranscriberPayload = {
+export interface AttachmentOptions {
+  /** Whether images should be downloaded and saved, defaults to `false`. */
+  save_images?: boolean;
+}
+
+export interface StyleOptions {
+  /** The path to a custom `style.css`, defaults to inline styles if `undefined`. */
+  path?: string;
+}
+
+export interface TranscriberPayloadOptions {
+  attachment?: AttachmentOptions;
+  style?: StyleOptions;
+}
+
+export interface TranscriberPayload {
   guild: APIGuild;
   channel: APIGuildTextChannel<GuildTextChannelType>;
   messages: APIMessage[];
-};
+  options?: TranscriberPayloadOptions;
+}
 
-export type ServerErrorPayload = {
+export interface ServerErrorPayload {
   status: number;
   message: string;
   details?: Record<string, string>;
-};
+}

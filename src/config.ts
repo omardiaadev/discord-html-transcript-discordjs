@@ -14,21 +14,55 @@
  * limitations under the License.
  */
 
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
-import pkg from '../package.json' with { type: 'json' };
+import {join} from 'node:path';
+import {statSync} from 'node:fs';
+import envPaths from 'env-paths';
+import {Logger} from './internal/logger.js';
+import pkg from '../package.json' with {type: 'json'};
 
-const BIN_DIR = join(dirname(fileURLToPath(import.meta.url)), '../bin');
+const paths = envPaths('discord-html-transcript', { suffix: '' });
 
-const { version } = pkg.server;
-const { platform, arch } = process;
+type ServerConfig = {
+  path: string;
+  filename: string;
+  version: string;
+};
 
-const fileExtension = platform === 'win32' ? '.exe' : '';
-const filename = `discord-html-transcript-server-${version}-${platform}-${arch}${fileExtension}`;
+function getServerConfig(): ServerConfig {
+  const { version } = pkg.server;
+  const { platform, arch } = process;
 
-export const SERVER_CONFIG = {
-  dir: BIN_DIR,
-  path: join(BIN_DIR, filename),
-  filename: filename,
-  version: version,
-} as const;
+  const fileExtension = platform === 'win32' ? '.exe' : '';
+  const filename = `discord-html-transcript-${version}-${platform}-${arch}${fileExtension}`;
+
+  const defaultPath = join(paths.data, filename);
+  const envPath = process.env.DISCORD_HTML_TRANSCRIPT_PATH;
+
+  if (envPath) {
+    try {
+      Logger.info(`Using custom server path: ${envPath}`);
+
+      if (statSync(envPath).isFile()) {
+        return {
+          path: envPath,
+          filename: filename,
+          version: version,
+        };
+      }
+    } catch {
+      Logger.warn(
+        `Custom server does not exist: ${envPath}
+        Defaulting to: ${defaultPath}`
+      );
+    }
+  } else {
+    Logger.info(`Using default server path: ${defaultPath}`);
+  }
+
+  return {
+    path: join(paths.data, filename),
+    filename: filename,
+    version: version,
+  };
+}
+export const SERVER_CONFIG = getServerConfig();

@@ -1,7 +1,7 @@
 {
   "name": "discord-html-transcript-discordjs",
-  "version": "0.1.0-beta.1",
-  "description": "Generate natively styled logs for Discord chats with discord.js",
+  "version": "0.1.0-beta.2",
+  "description": "Generate natively styled Discord chat logs with discord.js",
   "keywords": [
     "discord",
     "discordjs",
@@ -15,7 +15,7 @@
   },
   "license": "Apache-2.0",
   "author": "Omar Diaa <contact@omardiaa.dev> (https://github.com/omardiaadev)",
-  "funding": "https://github.com/omardiaadev/discord-html-transcript-discordjs?sponsor",
+  "funding": "https://github.com/sponsors/omardiaadev",
   "files": [
     "dist"
   ],
@@ -41,19 +41,21 @@
   },
   "scripts": {
     "build": "tsdown",
-    "test": "node --env-file=.env --import tsx --test src/service/transcriber-client.test.ts",
-    "postinstall": "node dist/scripts/download-server.mjs"
+    "test": "node --env-file=.env --import tsx --test src/service/transcriber-client.test.ts"
+  },
+  "dependencies": {
+    "env-paths": "^4.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@types/node": "^25.5.0",
-    "eslint": "^10.1.0",
+    "@types/node": "^25.5.2",
+    "eslint": "^10.2.0",
     "prettier": "3.8.1",
     "prettier-plugin-jsdoc": "^1.8.0",
     "tsdown": "^0.21.7",
     "tsx": "^4.21.0",
     "typescript": "^6.0.2",
-    "typescript-eslint": "^8.58.0"
+    "typescript-eslint": "^8.58.1"
   },
   "peerDependencies": {
     "discord.js": "^14.0.0"
@@ -67,6 +69,6 @@
     "tag": "beta"
   },
   "server": {
-    "version": "0.1.0-beta.4"
+    "version": "0.1.0-beta.5"
   }
 }

@@ -88,7 +88,6 @@ export class Server {
         enableLogs: options.enableLogs ?? true,
       };
 
-      validateServer();
       process.on('exit', this.handleExit);
     }
   }
@@ -113,6 +112,8 @@ export class Server {
     if (this.config.isExternal) {
       Logger.info(`Connecting to external server at ${this.config.url}`);
     } else {
+      await validateServer();
+
       Logger.info(`Starting local server at ${this.config.url}...`);
 
       this.process = spawn(SERVER_CONFIG.path, {

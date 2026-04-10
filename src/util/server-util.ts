@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-import { accessSync, chmodSync, constants, mkdirSync } from 'node:fs';
+import { constants, existsSync } from 'node:fs';
 import { SERVER_CONFIG } from '../config.js';
+import { Logger } from '../internal/logger.js';
+import { dirname } from 'node:path';
+import { access, chmod, mkdir, writeFile } from 'node:fs/promises';
 
 /**
  * Validates the server's executable path and permissions.
@@ -24,51 +27,80 @@ import { SERVER_CONFIG } from '../config.js';
  * @throws Error If the server executable is missing execution permissions `755` and the running process was unable to
  *   set it.
  */
-export function validateServer() {
-  checkServerDir();
-  checkServerPath();
+export async function validateServer(): Promise<void> {
+  await checkServerPath();
+  await checkServerPermissions();
+}
 
-  if (process.platform !== 'win32') {
-    checkServerPermissions();
+/**
+ * Checks the server executable path.
+ *
+ * Downloads the server executable if the path doesn't exist.
+ */
+export async function checkServerPath(): Promise<void> {
+  if (!existsSync(SERVER_CONFIG.path)) {
+    await downloadServer();
   }
 }
 
-export function checkServerDir() {
-  try {
-    mkdirSync(SERVER_CONFIG.dir, { recursive: true });
-  } catch (err) {
-    throw new Error('Failed to create missing server executable directory.', { cause: err });
+/**
+ * Checks the server executable permissions. Additionally, will attempt to set the correct permissions on the server
+ * executable path.
+ *
+ * @throws Error if `chmodSync` fails.
+ */
+export async function checkServerPermissions(): Promise<void> {
+  if (process.platform === 'win32') {
+    return;
   }
-}
 
-export function checkServerPath() {
   try {
-    accessSync(SERVER_CONFIG.path, constants.F_OK);
-  } catch (err) {
-    throw new Error(
-      `Server executable not found at: ${SERVER_CONFIG.path}
-      If you meant to use a local server, run 'npm install' without --ignore-scripts.
-      If you meant to use an external server, make sure to configure TranscriberClient.`,
-      { cause: err }
-    );
-  }
-}
-
-export function checkServerPermissions() {
-  try {
-    accessSync(SERVER_CONFIG.path, constants.X_OK);
+    await access(SERVER_CONFIG.path, constants.X_OK);
   } catch {
-    console.warn('Server executable permissions are missing, attempting to set them...');
+    Logger.warn('Server executable permissions are missing, attempting to set them...');
 
     try {
-      chmodSync(SERVER_CONFIG.path, 0o755);
-      console.log('Server executable permissions set to 755.');
-    } catch (err) {
+      await chmod(SERVER_CONFIG.path, 0o755);
+      Logger.info('Server executable permissions set to 755.');
+    } catch (error) {
       throw new Error(
         `Failed to set server executable permissions.
         Please run 'chmod +x ${SERVER_CONFIG.path}'`,
-        { cause: err }
+        { cause: error }
       );
     }
+  }
+}
+
+async function downloadServer(): Promise<void> {
+  const { path, filename, version } = SERVER_CONFIG;
+  const url = `https://github.com/omardiaadev/discord-html-transcript/releases/download/${version}/${filename}`;
+
+  Logger.info(
+    `Server not found: ${path}
+    Downloading ${url}...`
+  );
+
+  try {
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status} ${response.statusText}`);
+    }
+
+    const buffer = await response.arrayBuffer();
+
+    await mkdir(dirname(path), { recursive: true });
+    await writeFile(path, Buffer.from(buffer));
+
+    Logger.info(`Downloaded: ${path}`);
+  } catch (error) {
+    throw new Error(
+      `Failed to download server executable.
+      If you meant to use a local server, ensure DISCORD_HTML_TRANSCRIPT_PATH points to an existing file.
+      If you meant to use an external server, please configure TranscriberClient.
+      Download URL: ${url}`,
+      { cause: error }
+    );
   }
 }

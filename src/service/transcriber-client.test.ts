@@ -25,7 +25,6 @@ import { REQUIRED_INTENTS } from '../util/transcriber-util.js';
 await suite(
   'TranscriberClient',
   {
-    timeout: 30000,
     skip:
       (!process.env.DISCORD_BOT_TOKEN && 'Missing DISCORD_BOT_TOKEN environment variable.') ||
       (!process.env.DISCORD_CHANNEL_ID && 'Missing DISCORD_CHANNEL_ID environment variable.'),

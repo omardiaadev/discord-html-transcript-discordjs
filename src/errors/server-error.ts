@@ -16,7 +16,11 @@
 
 import { ServerErrorPayload } from '../types.js';
 
-/** Server error implementation. */
+/**
+ * Implementation for server errors.
+ *
+ * @see https://github.com/omardiaadev/discord-html-transcript/blob/main/server/src/main/java/dev/omardiaa/transcript/server/exception/GlobalExceptionHandler.java
+ */
 export class ServerError extends Error {
   constructor(message: string, options?: ErrorOptions) {
     super(message, options);
@@ -27,18 +31,6 @@ export class ServerError extends Error {
   }
 }
 
-/** @see https://github.com/omardiaadev/discord-html-transcript/blob/main/server/src/main/java/dev/omardiaa/transcript/server/exception/GlobalExceptionHandler.java */
-export class ServerMismatchedInputError extends ServerError {
-  constructor(error: ServerErrorPayload) {
-    super(
-      `Received mismatched Payload.
-      Problem: "${error.details?.problem}"
-      Path: "${error.details?.path}"`
-    );
-  }
-}
-
-/** @see https://github.com/omardiaadev/discord-html-transcript/blob/main/server/src/main/java/dev/omardiaa/transcript/server/exception/GlobalExceptionHandler.java */
 export class ServerMismatchedVersionError extends ServerError {
   constructor(error: ServerErrorPayload) {
     super(
@@ -49,7 +41,16 @@ export class ServerMismatchedVersionError extends ServerError {
   }
 }
 
-/** @see https://github.com/omardiaadev/discord-html-transcript/blob/main/server/src/main/java/dev/omardiaa/transcript/server/exception/GlobalExceptionHandler.java */
+export class ServerMismatchedInputError extends ServerError {
+  constructor(error: ServerErrorPayload) {
+    super(
+      `${error.message}
+      Path: "${error.details?.path}"
+      Problem: "${error.details?.problem}"`
+    );
+  }
+}
+
 export class ServerAuthenticationError extends ServerError {
   constructor() {
     super('Failed to authenticate client with the transcriber server.');

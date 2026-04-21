@@ -100,7 +100,7 @@ export class TranscriberClient {
     await this.server.start();
   }
 
-  /** Gracefully shuts down the server. */
+  /** Stops the server. */
   public stop(): void {
     this.server.stop();
   }
@@ -130,7 +130,7 @@ export class TranscriberClient {
       const [guild, channel, messages] = await Promise.all([
         this.fetcher.getGuild(guildChannel.guildId),
         this.fetcher.getChannel(guildChannel.id),
-        this.fetcher.getMessages(guildChannel.id),
+        this.fetcher.getMessages(guildChannel.id, options?.limit),
       ]);
 
       const response = await this.server.fetchTranscript({ guild, channel, messages, options });

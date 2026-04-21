@@ -32,28 +32,32 @@ export class TranscriberFetcher {
     return (await this.client.rest.get(Routes.channel(channelId))) as APIGuildTextChannel<GuildTextChannelType>;
   }
 
-  public async getMessages(channelId: Snowflake): Promise<APIMessage[]> {
+  public async getMessages(channelId: Snowflake, limit: number = Infinity): Promise<APIMessage[]> {
     const messages: APIMessage[] = [];
+    const query = new URLSearchParams();
+
     let lastMessageId: Snowflake | undefined;
 
-    while (true) {
-      const query = new URLSearchParams({ limit: '100' });
+    while (messages.length < limit) {
+      const fetchLimit = Math.min(100, limit - messages.length);
+
+      query.set('limit', fetchLimit.toString());
 
       if (lastMessageId) {
-        query.append('before', lastMessageId);
+        query.set('before', lastMessageId);
       }
 
       const batch = (await this.client.rest.get(Routes.channelMessages(channelId), { query })) as APIMessage[];
 
       messages.push(...batch);
 
-      if (batch.length < 100) {
+      if (batch.length < fetchLimit) {
         break;
       }
 
-      lastMessageId = batch[batch.length - 1].id;
+      lastMessageId = batch.at(-1)?.id;
     }
 
-    return messages.toReversed();
+    return messages.reverse();
   }
 }

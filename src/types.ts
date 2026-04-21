@@ -29,6 +29,8 @@ export interface StyleOptions {
 export interface TranscriberPayloadOptions {
   attachment?: AttachmentOptions;
   style?: StyleOptions;
+  /** The maximum number of messages to fetch in a channel, defaults to `Infinity`. */
+  limit?: number;
 }
 
 export interface TranscriberPayload {

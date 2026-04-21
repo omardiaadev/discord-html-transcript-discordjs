@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ChildProcess, spawn } from 'node:child_process';
+import { ChildProcess, spawn, StdioNull } from 'node:child_process';
 import {
   ServerAuthenticationError,
   ServerError,
@@ -58,7 +58,7 @@ export type ServerOptions = LocalServerOptions | ExternalServerOptions;
 
 type ServerConfig =
   | { isExternal: true; url: string; apiKey?: string }
-  | { isExternal: false; url: string; apiKey?: string; host: string; port: number; enableLogs: boolean };
+  | { isExternal: false; url: string; apiKey?: string; host: string; port: number; stdio: StdioNull };
 
 /** Represents the transcriber server, managing its configuration, lifecycle, and HTTP requests. */
 export class Server {
@@ -85,7 +85,7 @@ export class Server {
         apiKey: options.apiKey,
         host: host,
         port: port,
-        enableLogs: options.enableLogs ?? true,
+        stdio: options.enableLogs ? 'inherit' : 'ignore',
       };
 
       process.on('exit', this.handleExit);
@@ -117,11 +117,11 @@ export class Server {
       Logger.info(`Starting local server at ${this.config.url}...`);
 
       this.process = spawn(SERVER_CONFIG.path, {
-        stdio: ['pipe', this.config.enableLogs ? 'inherit' : 'ignore', this.config.enableLogs ? 'inherit' : 'ignore'],
+        stdio: ['pipe', this.config.stdio, this.config.stdio],
         env: {
           ...process.env,
-          TRANSCRIPT_SERVER_HOST: this.config.host,
-          TRANSCRIPT_SERVER_PORT: String(this.config.port),
+          DISCORD_HTML_TRANSCRIPT_HOST: this.config.host,
+          DISCORD_HTML_TRANSCRIPT_PORT: String(this.config.port),
         },
       });
     }
@@ -170,13 +170,6 @@ export class Server {
     return this.status === Status.Started;
   }
 
-  /**
-   * `POST /transcript` Endpoint.\
-   * Generates a transcript by sending the provided payload to the server.
-   *
-   * @param payload The transcript {@linkcode TranscriberPayload}.
-   * @returns A promise resolving to the request's {@linkcode Response}.
-   */
   public async fetchTranscript(payload: TranscriberPayload): Promise<Response> {
     return this.request('/transcript', {
       method: 'POST',
@@ -184,12 +177,6 @@ export class Server {
     });
   }
 
-  /**
-   * `GET /health` Endpoint.\
-   * Retrieves basic server information.
-   *
-   * @returns A promise resolving to the request's {@linkcode Response}.
-   */
   private async fetchHealth(): Promise<Response> {
     return this.request('/health', { method: 'GET' });
   }

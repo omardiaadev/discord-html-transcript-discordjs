@@ -56,7 +56,7 @@ await suite(
       const transcript = await transcriber.transcribe(channel as GuildTextBasedChannel);
       await transcript.toFile(transcriptPath);
 
-      Logger.info(`Saved file:${transcriptPath}`);
+      Logger.info(`Saved file://${transcriptPath}`);
     });
   }
 );

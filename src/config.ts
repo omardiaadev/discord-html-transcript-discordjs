@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import {join} from 'node:path';
-import {statSync} from 'node:fs';
+import { join } from 'node:path';
+import { statSync } from 'node:fs';
 import envPaths from 'env-paths';
-import {Logger} from './internal/logger.js';
-import pkg from '../package.json' with {type: 'json'};
+import { Logger } from './internal/logger.js';
+import pkg from '../package.json' with { type: 'json' };
 
 const paths = envPaths('discord-html-transcript', { suffix: '' });
 

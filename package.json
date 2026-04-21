@@ -41,21 +41,21 @@
   },
   "scripts": {
     "build": "tsdown",
-    "test": "node --env-file=.env --import tsx --test src/service/transcriber-client.test.ts"
+    "test": "node --import tsx --test src/service/transcriber-client.test.ts"
   },
   "dependencies": {
     "env-paths": "^4.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@types/node": "^25.5.2",
-    "eslint": "^10.2.0",
-    "prettier": "3.8.1",
+    "@types/node": "^24.12.2",
+    "eslint": "^10.2.1",
+    "prettier": "3.8.3",
     "prettier-plugin-jsdoc": "^1.8.0",
-    "tsdown": "^0.21.7",
+    "tsdown": "^0.21.9",
     "tsx": "^4.21.0",
-    "typescript": "^6.0.2",
-    "typescript-eslint": "^8.58.1"
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.59.0"
   },
   "peerDependencies": {
     "discord.js": "^14.0.0"
@@ -69,6 +69,6 @@
     "tag": "beta"
   },
   "server": {
-    "version": "0.1.0-beta.5"
+    "version": "0.1.0-beta.6"
   }
 }

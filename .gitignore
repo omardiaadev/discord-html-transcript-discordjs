@@ -9,6 +9,4 @@ dist/
 .idea/
 
 # Other
-bin/
 temp/
-.env

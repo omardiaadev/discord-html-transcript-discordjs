@@ -1,7 +1,7 @@
 <h1 align="center">discord-html-transcript-discordjs</h1>
 
 <p align="center">
-    <strong>Generate natively styled Discord chat logs with discord.js</strong>
+    <strong>Generate natively styled HTML chat logs with your discord.js bot</strong>
 </p>
 
 <p align="center">
@@ -13,8 +13,9 @@
 
 ## About
 
-**discord-html-transcript-discordjs** is a discord.js library that integrates the discord-html-transcript microservice
-to generate archives of your channels with respect to your discord.js instance.
+**discord-html-transcript-discordjs** is a **discord.js** library that generates offline HTML chat logs by retrieving
+the messages efficiently with your discord.js instance and passing them to the discord-html-transcript microservice
+to generate the file.
 
 ### Features
 

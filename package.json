@@ -1,13 +1,21 @@
 {
   "name": "discord-html-transcript-discordjs",
   "version": "0.1.0-beta.2",
-  "description": "Generate natively styled Discord chat logs with discord.js",
+  "description": "Generate natively styled HTML chat logs with your discord.js bot",
   "keywords": [
+    "html",
+    "markdown",
+    "transcript",
+    "archive",
+    "export",
+    "backup",
+    "ticket-system",
     "discord",
     "discordjs",
+    "discord-bot",
     "discord-logs",
-    "discord-tickets",
-    "discord-transcripts"
+    "discord-library",
+    "discord-html-transcripts"
   ],
   "homepage": "https://github.com/omardiaadev/discord-html-transcript-discordjs",
   "bugs": {
@@ -61,9 +69,9 @@
     "discord.js": "^14.0.0"
   },
   "engines": {
-    "node": ">=24.14.0"
+    "node": ">=24",
+    "pnpm": ">=10"
   },
-  "packageManager": "pnpm@10.33.0",
   "publishConfig": {
     "access": "public",
     "tag": "beta"

@@ -18,8 +18,6 @@ import { join } from 'node:path';
 import envPaths from 'env-paths';
 import pkg from '../package.json' with { type: 'json' };
 
-const paths = envPaths('discord-html-transcript', { suffix: '' });
-
 interface ServerConfig {
   isCustomPath: boolean;
   path: string;
@@ -29,11 +27,12 @@ interface ServerConfig {
 
 function getServerConfig(): ServerConfig {
   const { version } = pkg.server;
+  const { platform, arch } = process;
 
-  const fileExtension = process.platform === 'win32' ? '.exe' : '';
-  const filename = `discord-html-transcript-${version}-${process.platform}-${process.arch}${fileExtension}`;
+  const fileExtension = platform === 'win32' ? '.exe' : '';
+  const filename = `discord-html-transcript-${version}-${platform}-${arch}${fileExtension}`;
 
-  const defaultPath = join(paths.data, filename);
+  const defaultPath = join(envPaths('discord-html-transcript', { suffix: '' }).data, filename);
   const envPath = process.env.DISCORD_HTML_TRANSCRIPT_PATH;
 
   return {

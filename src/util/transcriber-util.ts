@@ -34,8 +34,7 @@ export const REQUIRED_PERMISSIONS = PermissionFlagsBits.ViewChannel | Permission
  */
 export function checkClient(client: Client) {
   if (!client.options.intents.has(REQUIRED_INTENTS)) {
-    const missingIntents = client.options.intents.missing(REQUIRED_INTENTS);
-    throw new TranscriberMissingIntentsError(missingIntents);
+    throw new TranscriberMissingIntentsError(client.options.intents.missing(REQUIRED_INTENTS));
   }
 }
 
@@ -55,7 +54,6 @@ export async function checkChannel(channel: GuildTextBasedChannel) {
   const member = channel.guild.members.me ?? (await channel.guild.members.fetchMe());
 
   if (!member.permissionsIn(channel).has(REQUIRED_PERMISSIONS)) {
-    const missingPermissions = member.permissionsIn(channel).missing(REQUIRED_PERMISSIONS);
-    throw new TranscriberMissingPermissionsError(missingPermissions, channel);
+    throw new TranscriberMissingPermissionsError(member.permissionsIn(channel).missing(REQUIRED_PERMISSIONS), channel);
   }
 }

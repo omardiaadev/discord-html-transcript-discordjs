@@ -15,54 +15,33 @@
  */
 
 import { join } from 'node:path';
-import { statSync } from 'node:fs';
 import envPaths from 'env-paths';
-import { Logger } from './internal/logger.js';
 import pkg from '../package.json' with { type: 'json' };
 
 const paths = envPaths('discord-html-transcript', { suffix: '' });
 
-type ServerConfig = {
+interface ServerConfig {
+  isCustomPath: boolean;
   path: string;
   filename: string;
   version: string;
-};
+}
 
 function getServerConfig(): ServerConfig {
   const { version } = pkg.server;
-  const { platform, arch } = process;
 
-  const fileExtension = platform === 'win32' ? '.exe' : '';
-  const filename = `discord-html-transcript-${version}-${platform}-${arch}${fileExtension}`;
+  const fileExtension = process.platform === 'win32' ? '.exe' : '';
+  const filename = `discord-html-transcript-${version}-${process.platform}-${process.arch}${fileExtension}`;
 
   const defaultPath = join(paths.data, filename);
   const envPath = process.env.DISCORD_HTML_TRANSCRIPT_PATH;
 
-  if (envPath) {
-    try {
-      Logger.info(`Using custom server path: ${envPath}`);
-
-      if (statSync(envPath).isFile()) {
-        return {
-          path: envPath,
-          filename: filename,
-          version: version,
-        };
-      }
-    } catch {
-      Logger.warn(
-        `Custom server does not exist: ${envPath}
-        Defaulting to: ${defaultPath}`
-      );
-    }
-  } else {
-    Logger.info(`Using default server path: ${defaultPath}`);
-  }
-
   return {
-    path: join(paths.data, filename),
-    filename: filename,
-    version: version,
+    isCustomPath: !!envPath,
+    path: envPath || defaultPath,
+    filename,
+    version,
   };
 }
+
 export const SERVER_CONFIG = getServerConfig();

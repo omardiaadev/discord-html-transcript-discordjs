@@ -14,20 +14,24 @@
  * limitations under the License.
  */
 
-import { constants, existsSync } from 'node:fs';
+import { dirname } from 'node:path';
+import { access, chmod, constants, mkdir, stat, writeFile } from 'node:fs/promises';
 import { SERVER_CONFIG } from '../config.js';
 import { Logger } from '../internal/logger.js';
-import { dirname } from 'node:path';
-import { access, chmod, mkdir, writeFile } from 'node:fs/promises';
 
 /**
  * Validates the server's executable path and permissions.
  *
- * @throws Error If the server executable is not found.
  * @throws Error If the server executable is missing execution permissions `755` and the running process was unable to
- *   set it.
+ *   correct it.
  */
 export async function validateServer(): Promise<void> {
+  if (SERVER_CONFIG.isCustomPath) {
+    Logger.info(`Using custom server path: ${SERVER_CONFIG.path}`);
+  } else {
+    Logger.info(`Using default server path: ${SERVER_CONFIG.path}`);
+  }
+
   await checkServerPath();
   await checkServerPermissions();
 }
@@ -37,19 +41,25 @@ export async function validateServer(): Promise<void> {
  *
  * Downloads the server executable if the path doesn't exist.
  */
-export async function checkServerPath(): Promise<void> {
-  if (!existsSync(SERVER_CONFIG.path)) {
-    await downloadServer();
+async function checkServerPath(): Promise<void> {
+  const stats = await stat(SERVER_CONFIG.path);
+
+  if (!stats.isFile()) {
+    Logger.warn(
+      `Custom server path does not exist: ${SERVER_CONFIG.path}.
+        Falling back to download...`
+    );
+
+    return await downloadServer();
   }
 }
 
 /**
- * Checks the server executable permissions. Additionally, will attempt to set the correct permissions on the server
- * executable path.
+ * Checks the server executable permissions and attempts to set the correct permissions manually if they are incorrect.
  *
- * @throws Error if `chmodSync` fails.
+ * @throws Error If `chmod` fails.
  */
-export async function checkServerPermissions(): Promise<void> {
+async function checkServerPermissions(): Promise<void> {
   if (process.platform === 'win32') {
     return;
   }
@@ -72,34 +82,38 @@ export async function checkServerPermissions(): Promise<void> {
   }
 }
 
+/**
+ * Downloads the server.
+ *
+ * @throws Error If the download fails.
+ * @throws Error If the file fails to save to disk.
+ */
 async function downloadServer(): Promise<void> {
-  const { path, filename, version } = SERVER_CONFIG;
-  const url = `https://github.com/omardiaadev/discord-html-transcript/releases/download/${version}/${filename}`;
+  const url = `https://github.com/omardiaadev/discord-html-transcript/releases/download/${SERVER_CONFIG.version}/${SERVER_CONFIG.filename}`;
 
-  Logger.info(
-    `Server not found: ${path}
-    Downloading ${url}...`
-  );
+  Logger.info(`Downloading ${url}...`);
 
-  try {
-    const response = await fetch(url);
+  const response = await fetch(url);
 
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status} ${response.statusText}`);
-    }
-
-    const buffer = await response.arrayBuffer();
-
-    await mkdir(dirname(path), { recursive: true });
-    await writeFile(path, Buffer.from(buffer));
-
-    Logger.info(`Downloaded: ${path}`);
-  } catch (error) {
+  if (!response.ok) {
     throw new Error(
       `Failed to download server executable.
-      If you meant to use a local server, ensure DISCORD_HTML_TRANSCRIPT_PATH points to an existing file.
-      If you meant to use an external server, please configure TranscriberClient.
-      Download URL: ${url}`,
+      ${response.status} ${response.statusText}`
+    );
+  }
+
+  try {
+    const bytes = await response.bytes();
+
+    await mkdir(dirname(SERVER_CONFIG.path), { recursive: true });
+    await writeFile(SERVER_CONFIG.path, bytes);
+
+    Logger.info(`Downloaded: ${SERVER_CONFIG.path}`);
+  } catch (error) {
+    throw new Error(
+      `Failed to save server executable.
+      If you meant to use a local server, ensure DISCORD_HTML_TRANSCRIPT_PATH exists.
+      If you meant to use a remote server, please configure TranscriberClient.`,
       { cause: error }
     );
   }

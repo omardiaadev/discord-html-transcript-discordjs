@@ -15,11 +15,11 @@
  */
 
 import { Client, GuildTextBasedChannel } from 'discord.js';
-import { TranscriberFetcher } from '../internal/transcriber-fetcher.js';
 import { Server, ServerOptions } from '../internal/server.js';
+import { TranscriberFetcher } from '../internal/transcriber-fetcher.js';
 import { TranscriberError } from '../errors/transcriber-error.js';
-import { Transcript } from '../model/transcript.js';
 import { checkChannel, checkClient } from '../util/transcriber-util.js';
+import { Transcript } from '../model/transcript.js';
 import { TranscriberPayloadOptions } from '../types.js';
 
 /** Represents the transcript generator. */
@@ -31,13 +31,13 @@ export class TranscriberClient {
    * Constructs a new {@linkcode TranscriberClient} instance.
    *
    * @param client The discord.js client instance.
-   * @param config The configuration used to initialize the {@linkcode Server}.
+   * @param options The options used to initialize the {@linkcode Server}.
    * @throws TranscriberMissingIntentsError If the provided {@linkcode client} instance is missing any of
    *   {@linkcode REQUIRED_INTENTS}.
    */
-  constructor(client: Client, config?: ServerOptions) {
+  constructor(client: Client, options?: ServerOptions) {
     checkClient(client);
-    this.server = new Server(config);
+    this.server = new Server(options);
     this.fetcher = new TranscriberFetcher(client);
   }
 

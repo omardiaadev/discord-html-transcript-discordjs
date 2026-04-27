@@ -13,16 +13,16 @@
 
 ## About
 
-**discord-html-transcript-discordjs** is a discord.js library that generates HTML archives of Discord channels
-by retrieving the messages using your discord.js instance and passing it to the generator.
+**discord-html-transcript-discordjs** is a discord.js library that integrates the discord-html-transcript microservice
+to generate archives of your channels with respect to your discord.js instance.
 
 ### Features
 
 <ul>
-    <li><strong>ComponentsV2</strong></li>
+    <li><strong>ComponentsV2:</strong> Containers, Media Galleries, Sections, and more.</li>
     <li><strong>Markdown:</strong> Standard Markup, Mentions, Custom Emojis, and more.</li>
     <li><strong>Message Accessories:</strong> Attachments, Embeds, Polls, References, and more.</li>
-    <li><strong>discord.js Integration:</strong> Reply to interactions with the generated file directly.</li>
+    <li><strong>discord.js Integration:</strong> Use the generated file with discord.js directly.</li>
 </ul>
 
 ### Preview
@@ -52,12 +52,13 @@ npm i discord-html-transcript-discordjs
 #### Local Server (Default)
 
 By default, the library downloads [discord-html-transcript](https://github.com/omardiaadev/discord-html-transcript)
-at runtime and places it inside your data directory (i.e., `~/.local/share/discord-html-transcript/`)
+at runtime and places it inside your data directory.\
+(i.e., `~/.local/share/discord-html-transcript/`)
 
 > [!TIP]
-> **If you wish to download the server manually:**
-> 1. Download [discord-html-transcript](https://github.com/omardiaadev/discord-html-transcript)
-> 2. Specify the server's path with an environment variable\
+> If you wish to download the server manually:
+> 1. Download [discord-html-transcript](https://github.com/omardiaadev/discord-html-transcript).
+> 2. Specify the server's path with an environment variable.\
      (e.g., `DISCORD_HTML_TRANSCRIPT_PATH=~/Downloads/discord-html-transcript-<version>-<platform>-<arch>`)
 
 ```javascript
@@ -74,8 +75,8 @@ If you wish to self-host [discord-html-transcript](https://github.com/omardiaade
 
 ```javascript
 const transcriber = new TranscriberClient(client, {
-    externalUrl: 'https://server-url', // required
-    apiKey: 'server-secret-key'        // required if the server requires authentication
+    url: 'https://server-url',  // required
+    apiKey: 'server-secret-key' // required if the server requires authentication
 });
 ```
 

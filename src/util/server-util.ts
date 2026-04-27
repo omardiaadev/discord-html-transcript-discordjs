@@ -18,6 +18,7 @@ import { dirname } from 'node:path';
 import { access, chmod, constants, mkdir, stat, writeFile } from 'node:fs/promises';
 import { SERVER_CONFIG } from '../config.js';
 import { Logger } from '../internal/logger.js';
+import ErrnoException = NodeJS.ErrnoException;
 
 /**
  * Validates the server's executable path and permissions.
@@ -42,15 +43,28 @@ export async function validateServer(): Promise<void> {
  * Downloads the server executable if the path doesn't exist.
  */
 async function checkServerPath(): Promise<void> {
-  const stats = await stat(SERVER_CONFIG.path);
+  try {
+    const stats = await stat(SERVER_CONFIG.path);
 
-  if (!stats.isFile()) {
-    Logger.warn(
-      `Custom server path does not exist: ${SERVER_CONFIG.path}.
+    if (!stats.isFile()) {
+      Logger.warn(
+        `Custom server path is not a file: ${SERVER_CONFIG.path}.
         Falling back to download...`
-    );
+      );
 
-    return await downloadServer();
+      await downloadServer();
+    }
+  } catch (error) {
+    if ((error as ErrnoException).code === 'ENOENT') {
+      Logger.warn(
+        `Custom server path does not exist: ${SERVER_CONFIG.path}.
+        Falling back to download...`
+      );
+
+      await downloadServer();
+    } else {
+      throw error;
+    }
   }
 }
 
@@ -95,7 +109,7 @@ async function downloadServer(): Promise<void> {
 
   const response = await fetch(url);
 
-  if (!response.ok) {
+  if (!response.ok || !response.body) {
     throw new Error(
       `Failed to download server executable.
       ${response.status} ${response.statusText}`
@@ -103,15 +117,13 @@ async function downloadServer(): Promise<void> {
   }
 
   try {
-    const bytes = await response.bytes();
-
     await mkdir(dirname(SERVER_CONFIG.path), { recursive: true });
-    await writeFile(SERVER_CONFIG.path, bytes);
+    await writeFile(SERVER_CONFIG.path, response.body);
 
     Logger.info(`Downloaded: ${SERVER_CONFIG.path}`);
   } catch (error) {
     throw new Error(
-      `Failed to save server executable.
+      `Failed to save server executable to disk.
       If you meant to use a local server, ensure DISCORD_HTML_TRANSCRIPT_PATH exists.
       If you meant to use a remote server, please configure TranscriberClient.`,
       { cause: error }

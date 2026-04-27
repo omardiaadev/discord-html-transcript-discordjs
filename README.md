@@ -2,35 +2,30 @@
 
 <p align="center">
     <strong>Generate natively styled Discord chat logs with discord.js</strong>
-    <br>
-    <a href="https://github.com/omardiaadev/discord-html-transcript">discord-html-transcript</a> wrapper for discord.js
 </p>
 
 <p align="center">
     <a href="https://npmjs.com/discord-html-transcript-discordjs"><img alt="npm" src="https://img.shields.io/npm/v/discord-html-transcript-discordjs?color=0055D2"></a>
     <a href="https://github.com/omardiaadev/discord-html-transcript"><img alt="discord-html-transcript" src="https://img.shields.io/github/v/tag/omardiaadev/discord-html-transcript?filter=0.1.0-beta.6&label=discord-html-transcript&color=0559D2"></a>
-    <a href="https://github.com/omardiaadev/discord-html-transcript-jda/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/omardiaadev/discord-html-transcript-jda?label=License&color=0559D2"></a>
-    <a href="https://discord.gg/fWtQjEJgWX"><img alt="Discord" src="https://img.shields.io/badge/Discord-5865F2?logo=discord&logoColor=FFF&color=5865F2"></a>
+    <a href="https://github.com/omardiaadev/discord-html-transcript-discordjs/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/omardiaadev/discord-html-transcript-discordjs?label=License&color=0559D2"></a>
+    <a href="https://discord.omardiaa.dev"><img alt="Discord" src="https://img.shields.io/badge/Discord-5865F2?logo=discord&logoColor=FFF&color=5865F2"></a>
 </p>
 
-<details>
-    <summary>Table of Contents</summary>
-    <ul>
-        <li><a href="#features">Features</a></li>
-        <li><a href="#preview">Preview</a></li>
-        <li><a href="#getting-started">Getting Started</a></li>
-        <li><a href="#usage">Usage</a></li>
-        <li><a href="#contributing">Contributing</a></li>
-    </ul>
-</details>
+## About
 
-## Features
+**discord-html-transcript-discordjs** is a discord.js library that generates HTML archives of Discord channels
+by retrieving the messages using your discord.js instance and passing it to the generator.
 
-- **discord.js Integration:** Built specifically for discord.js developers.
-- **Beautiful UI:** Modern styling that replicates the look and feel of the Discord desktop client.
-- **100% Offline:** Built to contain all information in one file.
+### Features
 
-## Preview
+<ul>
+    <li><strong>ComponentsV2</strong></li>
+    <li><strong>Markdown:</strong> Standard Markup, Mentions, Custom Emojis, and more.</li>
+    <li><strong>Message Accessories:</strong> Attachments, Embeds, Polls, References, and more.</li>
+    <li><strong>discord.js Integration:</strong> Reply to interactions with the generated file directly.</li>
+</ul>
+
+### Preview
 
 <a title="✨" href="https://htmlpreview.github.io/?https://github.com/omardiaadev/discord-html-transcript/blob/main/examples/transcript.html">
     <img alt="discord-html-transcript" src="https://res.cloudinary.com/omardiaadev/image/upload/discord-html-transcript_ocjq03.png">
@@ -40,9 +35,9 @@
 
 ### Prerequisites
 
-- **Node.js** v24.14.0 or higher
-- **discord.js** v14 or higher
-- **discord-html-transcript** v0.1.0-beta.6
+- **Node.js v24.14.0** or higher
+- **discord.js v14** or higher
+- **discord-html-transcript v0.1.0-beta.6**
 - [**Required Intents**](https://docs.discord.com/developers/quick-start/getting-started#what-are-intents):
   `GUILDS`, `GUILD_MEMBERS`, `MESSAGE_CONTENT`.
 
@@ -56,18 +51,18 @@ npm i discord-html-transcript-discordjs
 
 #### Local Server (Default)
 
-By default, the library downloads [`discord-html-transcript`](https://github.com/omardiaadev/discord-html-transcript)
-at runtime and places it inside `~/.local/share/discord-html-transcript/`.
+By default, the library downloads [discord-html-transcript](https://github.com/omardiaadev/discord-html-transcript)
+at runtime and places it inside your data directory (i.e., `~/.local/share/discord-html-transcript/`)
 
 > [!TIP]
-> If you wish to download the server manually:
-> 1. Download [`discord-html-transcript`](https://github.com/omardiaadev/discord-html-transcript).
-> 2. Specify `DISCORD_HTML_TRANSCRIPT_PATH` environment variable.\
-     (e.g., `DISCORD_HTML_TRANSCRIPT_PATH=~/Downloads/discord-html-transcript...`)
+> **If you wish to download the server manually:**
+> 1. Download [discord-html-transcript](https://github.com/omardiaadev/discord-html-transcript)
+> 2. Specify the server's path with an environment variable\
+     (e.g., `DISCORD_HTML_TRANSCRIPT_PATH=~/Downloads/discord-html-transcript-<version>-<platform>-<arch>`)
 
 ```javascript
 const transcriber = new TranscriberClient(client, {
-    // override the default host and port if needed
+    // override the default host and port if necessary
     host: 'localhost', // default: '127.0.0.1'
     port: 8080         // default: 7000
 });
@@ -75,12 +70,12 @@ const transcriber = new TranscriberClient(client, {
 
 #### Remote Server
 
-If you're self-hosting [`discord-html-transcript`](https://github.com/omardiaadev/discord-html-transcript):
+If you wish to self-host [discord-html-transcript](https://github.com/omardiaadev/discord-html-transcript):
 
 ```javascript
 const transcriber = new TranscriberClient(client, {
     externalUrl: 'https://server-url', // required
-    apiKey: 'secret-key'               // required if the server requires authentication
+    apiKey: 'server-secret-key'        // required if the server requires authentication
 });
 ```
 

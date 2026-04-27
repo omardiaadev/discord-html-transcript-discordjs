@@ -46,13 +46,15 @@ await suite(
     });
 
     test('shouldTranscribe', async () => {
-      const channel = await client.channels.fetch(process.env.DISCORD_CHANNEL_ID!, { force: true });
+      const channel = (await client.channels.fetch(process.env.DISCORD_CHANNEL_ID!, {
+        force: true,
+      })) as GuildTextBasedChannel;
 
       const transcriptDir = join(process.cwd(), 'temp');
       await mkdir(transcriptDir, { recursive: true });
       const transcriptPath = join(transcriptDir, 'transcript.html');
 
-      const transcript = await transcriber.transcribe(channel as GuildTextBasedChannel);
+      const transcript = await transcriber.transcribe(channel);
       await transcript.toFile(transcriptPath);
 
       Logger.info(`Saved file://${transcriptPath}`);

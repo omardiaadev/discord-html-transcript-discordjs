@@ -17,11 +17,11 @@
 import { AttachmentBuilder, AttachmentData } from 'discord.js';
 import { writeFile } from 'node:fs/promises';
 
-/** Represents the generated transcript as byte output. */
+/** Represents the transcript. */
 export class Transcript {
   private readonly output;
 
-  /** @param output The transcript byte output. */
+  /** @param output The transcript output in bytes. */
   constructor(output: Uint8Array<ArrayBuffer>) {
     this.output = output;
   }

@@ -15,81 +15,86 @@
  */
 
 import { ChildProcess, spawn, StdioNull } from 'node:child_process';
-import {
-  ServerAuthenticationError,
-  ServerError,
-  ServerMismatchedInputError,
-  ServerMismatchedVersionError,
-} from '../errors/server-error.js';
+import { ServerError } from '../errors/server-error.js';
 import { validateServer } from '../util/server-util.js';
 import { SERVER_CONFIG } from '../config.js';
-import { ServerErrorPayload, TranscriberPayload } from '../types.js';
 import { Logger } from './logger.js';
+import { ServerFetcher } from './server-fetcher.js';
 
-enum Status {
-  Started = 'started',
-  Starting = 'starting',
-  Stopped = 'stopped',
-}
+type ServerConfig =
+  | {
+      isRemote: true;
+      url: string;
+      apiKey?: string;
+    }
+  | {
+      isRemote: false;
+      url: string;
+      apiKey?: string;
+      host: string;
+      port: number;
+      stdio: StdioNull;
+    };
 
-export type SharedServerOptions = {
+type Status = 'started' | 'starting' | 'stopped';
+
+interface SharedServerOptions {
   /** An optional API key for authenticating the client with the server. */
   apiKey?: string;
-};
+}
 
-export type LocalServerOptions = SharedServerOptions & {
+interface LocalServerOptions extends SharedServerOptions {
   /** The host on which the local server will bind to (default: `127.0.0.1`). */
   host?: string;
   /** The port on which the local server will listen to (default: `7000`). */
   port?: number;
-  externalUrl?: never;
-  enableLogs?: boolean;
-};
+  url?: never;
+  showLogs?: boolean;
+}
 
-export type ExternalServerOptions = SharedServerOptions & {
-  /** An existing external server URL to connect to, bypassing local server creation. */
+interface RemoteServerOptions extends SharedServerOptions {
   host?: never;
   port?: never;
-  externalUrl: string;
-  enableLogs?: never;
-};
+  /** An existing external server URL to connect to, bypassing local server creation. */
+  url: string;
+  showLogs?: never;
+}
 
-export type ServerOptions = LocalServerOptions | ExternalServerOptions;
-
-type ServerConfig =
-  | { isExternal: true; url: string; apiKey?: string }
-  | { isExternal: false; url: string; apiKey?: string; host: string; port: number; stdio: StdioNull };
+export type ServerOptions = LocalServerOptions | RemoteServerOptions;
 
 /** Represents the transcriber server, managing its configuration, lifecycle, and HTTP requests. */
 export class Server {
+  public readonly fetcher: ServerFetcher;
   private readonly config: ServerConfig;
-  private readonly handleExit = () => this.stop();
+  private readonly handleExit: () => void;
 
-  private status: Status = Status.Stopped;
-  private process: ChildProcess | null = null;
+  private status: Status;
+  private process: ChildProcess | null;
+  private startPromise: Promise<void> | null = null;
 
   constructor(options: ServerOptions = {}) {
-    if (options.externalUrl) {
-      this.config = {
-        isExternal: true,
-        url: options.externalUrl,
-        apiKey: options.apiKey,
-      };
-    } else {
-      const host = options.host?.trim() || '127.0.0.1';
-      const port = options.port ?? 7000;
+    const host = options.host?.trim() || '127.0.0.1';
+    const port = options.port ?? 7000;
+    const url = options.url || `http://${host}:${port}`;
 
-      this.config = {
-        isExternal: false,
-        url: `http://${host}:${port}`,
-        apiKey: options.apiKey,
-        host: host,
-        port: port,
-        stdio: options.enableLogs ? 'inherit' : 'ignore',
-      };
-
-      process.on('exit', this.handleExit);
-    }
+    this.fetcher = new ServerFetcher(url, options.apiKey);
+    this.config = options.url
+      ? {
+          isRemote: true,
+          url: url,
+          apiKey: options.apiKey,
+        }
+      : {
+          isRemote: false,
+          url: url,
+          apiKey: options.apiKey,
+          host: host,
+          port: port,
+          stdio: options.showLogs ? 'inherit' : 'ignore',
+        };
+    this.handleExit = () => this.stop();
+    this.status = 'stopped';
+    this.process = null;
   }
 
   /**
@@ -99,36 +104,82 @@ export class Server {
    * external server. Otherwise, it spawns a local server process using the provided `host` and `port`.
    *
    * @returns A promise that resolves with the readiness of the server.
-   * @throws ServerError If the server cannot be reached.
+   * @throws Error If the server cannot be reached.
    */
   public async start(): Promise<void> {
-    if (this.status !== Status.Stopped) {
-      Logger.warn(`Server is already ${this.status}.`);
+    if (this.status === 'started') {
+      Logger.warn(`Server is already started.`);
       return;
     }
 
-    this.status = Status.Starting;
-
-    if (this.config.isExternal) {
-      Logger.info(`Connecting to external server at ${this.config.url}`);
-    } else {
-      await validateServer();
-
-      Logger.info(`Starting local server at ${this.config.url}...`);
-
-      this.process = spawn(SERVER_CONFIG.path, {
-        stdio: ['pipe', this.config.stdio, this.config.stdio],
-        env: {
-          ...process.env,
-          DISCORD_HTML_TRANSCRIPT_HOST: this.config.host,
-          DISCORD_HTML_TRANSCRIPT_PORT: String(this.config.port),
-        },
-      });
+    if (this.status === 'starting' && this.startPromise) {
+      Logger.warn('Server is already starting.');
+      return this.startPromise;
     }
 
-    await this.checkReady();
-    this.status = Status.Started;
-    Logger.info(`Started local server at ${this.config.url}`);
+    this.status = 'starting';
+
+    this.startPromise = (async () => {
+      try {
+        if (this.config.isRemote) {
+          Logger.info(`Connecting to external server at ${this.config.url}`);
+        } else {
+          await validateServer();
+
+          Logger.info(`Starting local server at ${this.config.url}...`);
+
+          this.process = spawn(SERVER_CONFIG.path, {
+            stdio: ['pipe', this.config.stdio, this.config.stdio],
+            env: {
+              ...process.env,
+              DISCORD_HTML_TRANSCRIPT_HOST: this.config.host,
+              DISCORD_HTML_TRANSCRIPT_PORT: String(this.config.port),
+            },
+          });
+
+          process.once('exit', this.handleExit);
+        }
+
+        await this.checkReady();
+        this.status = 'started';
+        Logger.info(`Server ready at ${this.config.url}`);
+      } catch (error) {
+        this.stop();
+        throw error;
+      } finally {
+        this.startPromise = null;
+      }
+    })();
+
+    return this.startPromise;
+  }
+
+  /** Stops the local server. */
+  public stop(): void {
+    if (this.process) {
+      Logger.info('Stopping server...');
+      this.process.kill();
+      this.process = null;
+      process.off('exit', this.handleExit);
+    }
+
+    this.status = 'stopped';
+  }
+
+  /**
+   * @returns A promise that resolves when the server is ready to accept requests.
+   * @throws ServerError If the server was not started.
+   */
+  public async awaitReady(): Promise<void> {
+    if (this.status === 'started') {
+      return;
+    }
+
+    if (this.status === 'starting' && this.startPromise) {
+      return this.startPromise;
+    }
+
+    throw new ServerError('Server is stopped. Did you forget to call "start()"?');
   }
 
   /**
@@ -136,90 +187,20 @@ export class Server {
    *
    * @param maxAttempts The maximum number of connection attempts before failing.
    * @param attemptIntervalMs The interval between each connection attempt in milliseconds.
+   * @throws Error
    */
   private async checkReady(maxAttempts = 20, attemptIntervalMs = 500): Promise<void> {
-    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    for (let attempts = 1; attempts <= maxAttempts; attempts++) {
       try {
-        await this.fetchHealth();
+        await this.fetcher.fetchHealth();
         return;
       } catch (error) {
-        if (error instanceof ServerError) throw error;
-        if (attempt === maxAttempts) throw error;
+        if (error instanceof ServerError || attempts === maxAttempts) {
+          throw error;
+        }
+
         await new Promise((resolve) => setTimeout(resolve, attemptIntervalMs));
       }
     }
-  }
-
-  /** Gracefully stops the local server. */
-  public stop(): void {
-    if (this.process) {
-      Logger.info('Stopping server...');
-      this.process.kill();
-      this.process = null;
-    }
-
-    if (!this.config.isExternal) {
-      process.off('exit', this.handleExit);
-    }
-
-    this.status = Status.Stopped;
-  }
-
-  /** @returns `true` if the server is ready to accept requests, otherwise `false`. */
-  public isReady(): boolean {
-    return this.status === Status.Started;
-  }
-
-  public async fetchTranscript(payload: TranscriberPayload): Promise<Response> {
-    return this.request('/transcript', {
-      method: 'POST',
-      body: JSON.stringify(payload),
-    });
-  }
-
-  private async fetchHealth(): Promise<Response> {
-    return this.request('/health', { method: 'GET' });
-  }
-
-  /**
-   * An internal wrapper for making HTTP requests to the transcriber server.\
-   * Automatically appends required headers and parses common server errors into custom typed exceptions.
-   *
-   * @param endpoint The request path (e.g. `/transcript`).
-   * @param init The request options.
-   * @returns A promise resolving to the request's {@linkcode Response}.
-   */
-  private async request(endpoint: string, init?: RequestInit): Promise<Response> {
-    const url = new URL(endpoint, this.config.url);
-    const headers = new Headers(init?.headers);
-
-    headers.set('Server-Version', SERVER_CONFIG.version);
-
-    if (init?.body) {
-      headers.set('Content-Type', 'application/json');
-    }
-
-    if (this.config.apiKey) {
-      headers.set('Authorization', `Bearer ${this.config.apiKey}`);
-    }
-
-    const response = await fetch(url, { ...init, headers });
-
-    if (!response.ok) {
-      const error = (await response.json()) as ServerErrorPayload;
-
-      switch (response.status) {
-        case 400:
-          throw new ServerMismatchedInputError(error);
-        case 401:
-          throw new ServerAuthenticationError();
-        case 409:
-          throw new ServerMismatchedVersionError(error);
-        default:
-          throw new ServerError(`Failed to reach server at ${this.config.url}`, { cause: error });
-      }
-    }
-
-    return response;
   }
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ChildProcess, spawn, StdioNull } from 'node:child_process';
+import { ChildProcess, spawn } from 'node:child_process';
 import { ServerError } from '../errors/server-error.js';
 import { validateServer } from '../util/server-util.js';
 import { SERVER_CONFIG } from '../config.js';
@@ -33,8 +33,10 @@ type ServerConfig =
       apiKey?: string;
       host: string;
       port: number;
-      stdio: StdioNull;
+      log: LogLevel;
     };
+
+type LogLevel = 'INFO' | 'WARN' | 'ERROR' | 'DEBUG' | 'TRACE';
 
 type Status = 'started' | 'starting' | 'stopped';
 
@@ -49,7 +51,7 @@ interface LocalServerOptions extends SharedServerOptions {
   /** The port on which the local server will listen to (default: `7000`). */
   port?: number;
   url?: never;
-  showLogs?: boolean;
+  log: LogLevel;
 }
 
 interface RemoteServerOptions extends SharedServerOptions {
@@ -57,7 +59,7 @@ interface RemoteServerOptions extends SharedServerOptions {
   port?: never;
   /** An existing external server URL to connect to, bypassing local server creation. */
   url: string;
-  showLogs?: never;
+  log: LogLevel;
 }
 
 export type ServerOptions = LocalServerOptions | RemoteServerOptions;
@@ -72,7 +74,7 @@ export class Server {
   private process: ChildProcess | null;
   private startPromise: Promise<void> | null = null;
 
-  constructor(options: ServerOptions = {}) {
+  constructor(options: ServerOptions = { host: '127.0.0.1', port: 7000, log: 'WARN' }) {
     const host = options.host?.trim() || '127.0.0.1';
     const port = options.port ?? 7000;
     const url = options.url || `http://${host}:${port}`;
@@ -90,7 +92,7 @@ export class Server {
           apiKey: options.apiKey,
           host: host,
           port: port,
-          stdio: options.showLogs ? 'inherit' : 'ignore',
+          log: options.log,
         };
     this.handleExit = () => this.stop();
     this.status = 'stopped';
@@ -129,11 +131,12 @@ export class Server {
           Logger.info(`Starting local server at ${this.config.url}...`);
 
           this.process = spawn(SERVER_CONFIG.path, {
-            stdio: ['pipe', this.config.stdio, this.config.stdio],
+            stdio: ['pipe', 'inherit', 'inherit'],
             env: {
               ...process.env,
               DISCORD_HTML_TRANSCRIPT_HOST: this.config.host,
               DISCORD_HTML_TRANSCRIPT_PORT: String(this.config.port),
+              DISCORD_HTML_TRANSCRIPT_LOG_LEVEL: this.config.log.toString(),
             },
           });
 

@@ -29,8 +29,8 @@ local environment running.
 
 #### Prerequisites
 
-- **Node.js v24.14.0** or higher
-- **pnpm v10** or higher
+- **Node.js v24** or higher
+- **pnpm v11** or higher
 
 #### Clone
 

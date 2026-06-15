@@ -5,10 +5,10 @@
 </p>
 
 <p align="center">
-    <a href="https://npmjs.com/discord-html-transcript-discordjs"><img alt="npm" src="https://img.shields.io/npm/v/discord-html-transcript-discordjs?color=0055D2"></a>
-    <a href="https://github.com/omardiaadev/discord-html-transcript"><img alt="discord-html-transcript" src="https://img.shields.io/github/v/tag/omardiaadev/discord-html-transcript?filter=0.1.0-beta.6&label=discord-html-transcript&color=0559D2"></a>
-    <a href="https://github.com/omardiaadev/discord-html-transcript-discordjs/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/omardiaadev/discord-html-transcript-discordjs?label=License&color=0559D2"></a>
-    <a href="https://discord.omardiaa.dev"><img alt="Discord" src="https://img.shields.io/badge/Discord-5865F2?logo=discord&logoColor=FFF&color=5865F2"></a>
+    <a href="https://npmjs.com/discord-html-transcript-discordjs"><img alt="npm" src="https://img.shields.io/npm/v/discord-html-transcript-discordjs?style=flat-square&color=0088FF"></a>
+    <a href="https://github.com/omardiaadev/discord-html-transcript"><img alt="discord-html-transcript" src="https://img.shields.io/github/v/tag/omardiaadev/discord-html-transcript?style=flat-square&filter=0.1.0-beta.7&label=discord-html-transcript&color=0088FF"></a>
+    <a href="https://github.com/omardiaadev/discord-html-transcript-discordjs/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/omardiaadev/discord-html-transcript-discordjs?style=flat-square&label=License&color=0088FF"></a>
+    <a href="https://discord.omardiaa.dev"><img alt="Discord" src="https://img.shields.io/badge/Discord-5865F2?style=flat-square&logo=discord&logoColor=FFF&color=5865F2"></a>
 </p>
 
 ## About
@@ -19,26 +19,24 @@ to generate the file.
 
 ### Features
 
-<ul>
-    <li><strong>ComponentsV2:</strong> Containers, Media Galleries, Sections, and more.</li>
-    <li><strong>Markdown:</strong> Standard Markup, Mentions, Custom Emojis, and more.</li>
-    <li><strong>Message Accessories:</strong> Attachments, Embeds, Polls, References, and more.</li>
-    <li><strong>discord.js Integration:</strong> Use the generated file with discord.js directly.</li>
-</ul>
+- **ComponentsV2:** Containers, Media Galleries, Sections, and more.
+- **Markdown:** Standard Markup, Mentions, Custom Emojis, and more.
+- **Message Accessories:** Attachments, Embeds, Polls, References, and more.
+- **discord.js Integration:** Use the generated file with discord.js directly.
 
-### Preview
+### Example
 
-<a title="✨" href="https://htmlpreview.github.io/?https://github.com/omardiaadev/discord-html-transcript/blob/main/examples/transcript.html">
-    <img alt="discord-html-transcript" src="https://res.cloudinary.com/omardiaadev/image/upload/discord-html-transcript_ocjq03.png">
+<a title="Live Example" href="https://htmlpreview.github.io/?https://github.com/omardiaadev/discord-html-transcript/blob/main/examples/transcript.html">
+    <img alt="discord-html-transcript" src="https://res.cloudinary.com/omardiaadev/image/upload/discord-transcript_aldbto.png">
 </a>
 
 ## Getting Started
 
 ### Prerequisites
 
-- **Node.js v24.14.0** or higher
+- **Node.js v24** or higher
 - **discord.js v14** or higher
-- **discord-html-transcript v0.1.0-beta.6**
+- **discord-html-transcript v0.1.0-beta.7**
 - [**Required Intents**](https://docs.discord.com/developers/quick-start/getting-started#what-are-intents):
   `GUILDS`, `GUILD_MEMBERS`, `MESSAGE_CONTENT`.
 
@@ -146,7 +144,7 @@ await client.login(process.env.DISCORD_BOT_TOKEN);
 Need help? [Ask the Community](https://discord.omardiaa.dev)!
 
 <div align="center">
-    <p>Made With ❤️ By <a href="https://github.com/omardiaadev"><b>Omar Diaa</b></a></p>
+    <p>Made With 💙 By <a href="https://github.com/omardiaadev"><b>Omar Diaa</b></a></p>
     <a href="https://fiverr.com/skywolfxp"><img alt="Fiverr" src="https://img.shields.io/badge/-1DBF73?style=for-the-badge&logo=fiverr&logoColor=FFF&logoSize=auto"></a>
     <a href="https://ko-fi.com/omardiaadev"><img alt="Ko-fi" src="https://img.shields.io/badge/ko--fi-FF6433?style=for-the-badge&logo=kofi&logoColor=FFF"></a>
 </div>

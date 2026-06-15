@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-import { defineConfig, globalIgnores } from 'eslint/config';
+import { defineConfig } from 'eslint/config';
 import js from '@eslint/js';
 import ts from 'typescript-eslint';
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  {
+    ignores: ['dist/'],
+  },
   js.configs.recommended,
+  ...ts.configs.recommended,
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.mts', '**/*.cts'],
-    extends: [ts.configs.recommended],
   },
 ]);

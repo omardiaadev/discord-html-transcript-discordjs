@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AttachmentBuilder, AttachmentData } from 'discord.js';
+import { AttachmentBuilder, type AttachmentData } from 'discord.js';
 import { writeFile } from 'node:fs/promises';
 
 /** Represents the transcript. */

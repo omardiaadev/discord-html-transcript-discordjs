@@ -18,7 +18,6 @@ import { dirname } from 'node:path';
 import { access, chmod, constants, mkdir, stat, writeFile } from 'node:fs/promises';
 import { SERVER_CONFIG } from '../config.js';
 import { Logger } from '../internal/logger.js';
-import ErrnoException = NodeJS.ErrnoException;
 
 /**
  * Validates the server's executable path and permissions.
@@ -55,16 +54,18 @@ async function checkServerPath(): Promise<void> {
       await downloadServer();
     }
   } catch (error) {
-    if ((error as ErrnoException).code === 'ENOENT') {
-      Logger.warn(
-        `Custom server path does not exist: ${SERVER_CONFIG.path}.
-        Falling back to download...`
-      );
+    if (error instanceof Error && 'code' in error) {
+      if (error.code === 'ENOENT') {
+        Logger.warn(
+          `Custom server path does not exist: ${SERVER_CONFIG.path}.
+          Falling back to download...`
+        );
 
-      await downloadServer();
-    } else {
-      throw error;
+        await downloadServer();
+      }
     }
+
+    throw error;
   }
 }
 

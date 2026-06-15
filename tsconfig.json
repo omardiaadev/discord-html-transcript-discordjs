@@ -1,15 +1,12 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "NodeNext",
+    "target": "esnext",
+    "module": "nodenext",
     "moduleResolution": "nodenext",
     "types": ["node"],
-    "outDir": "./dist",
-    "rootDir": "./src",
-    // Strictness
     "strict": true,
+    "verbatimModuleSyntax": true,
     "forceConsistentCasingInFileNames": true,
-    // Build
     "skipLibCheck": true,
     "sourceMap": true,
     "declaration": true,

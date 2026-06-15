@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ChannelType, Client, GatewayIntentBits, GuildTextBasedChannel, PermissionFlagsBits } from 'discord.js';
+import { ChannelType, Client, GatewayIntentBits, type GuildTextBasedChannel, PermissionFlagsBits } from 'discord.js';
 import {
   TranscriberInvalidChannelTypeError,
   TranscriberMissingIntentsError,

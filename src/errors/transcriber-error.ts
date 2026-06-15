@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Channel, GatewayIntentsString, GuildChannel, PermissionsString } from 'discord.js';
+import { type Channel, type GatewayIntentsString, GuildChannel, type PermissionsString } from 'discord.js';
 
 /** Implementation for client errors. */
 export class TranscriberError extends Error {

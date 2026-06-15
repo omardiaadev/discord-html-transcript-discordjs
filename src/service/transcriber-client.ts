@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { Client, GuildTextBasedChannel } from 'discord.js';
-import { Server, ServerOptions } from '../internal/server.js';
+import { Client, type GuildTextBasedChannel } from 'discord.js';
+import { Server, type ServerOptions } from '../internal/server.js';
 import { TranscriberFetcher } from '../internal/transcriber-fetcher.js';
 import { TranscriberError } from '../errors/transcriber-error.js';
 import { checkChannel, checkClient } from '../util/transcriber-util.js';
 import { Transcript } from '../model/transcript.js';
-import { TranscriberPayloadOptions } from '../types.js';
+import type { TranscriberPayloadOptions } from '../types.js';
 
 /** Represents the transcript generator. */
 export class TranscriberClient {

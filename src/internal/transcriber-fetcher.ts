@@ -14,7 +14,15 @@
  * limitations under the License.
  */
 
-import { APIGuild, APIGuildTextChannel, APIMessage, Client, GuildTextChannelType, Routes, Snowflake } from 'discord.js';
+import {
+  type APIGuild,
+  type APIGuildTextChannel,
+  type APIMessage,
+  Client,
+  type GuildTextChannelType,
+  Routes,
+  type Snowflake,
+} from 'discord.js';
 import { TranscriberError } from '../errors/transcriber-error.js';
 
 /** Fetches the required {@linkcode TranscriberPayload} using the provided discord.js instance. */

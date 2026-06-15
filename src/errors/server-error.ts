@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ServerErrorPayload } from '../types.js';
+import type { ServerErrorPayload } from '../types.js';
 
 /**
  * Implementation for server errors.

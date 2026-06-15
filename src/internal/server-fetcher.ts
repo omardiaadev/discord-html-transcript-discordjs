@@ -15,7 +15,7 @@
  */
 
 import { SERVER_CONFIG } from '../config.js';
-import { ServerErrorPayload, TranscriberPayload } from '../types.js';
+import type { ServerErrorPayload, TranscriberPayload } from '../types.js';
 import {
   ServerAuthenticationError,
   ServerError,

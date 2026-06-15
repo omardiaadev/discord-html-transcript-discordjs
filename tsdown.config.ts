@@ -20,8 +20,8 @@ export default defineConfig({
   entry: 'src/index.ts',
   outDir: 'dist',
   format: ['esm', 'cjs'],
-  sourcemap: true,
-  shims: true,
   dts: true,
+  shims: true,
   clean: true,
+  sourcemap: true,
 });

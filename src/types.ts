@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { APIGuild, APIGuildTextChannel, APIMessage, GuildTextChannelType } from 'discord.js';
+import type { APIGuild, APIGuildTextChannel, APIMessage, GuildTextChannelType } from 'discord.js';
 
 export interface AttachmentOptions {
   /** Whether images should be downloaded and saved, defaults to `false`. */

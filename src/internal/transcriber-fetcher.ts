@@ -15,6 +15,7 @@
  */
 
 import { APIGuild, APIGuildTextChannel, APIMessage, Client, GuildTextChannelType, Routes, Snowflake } from 'discord.js';
+import { TranscriberError } from '../errors/transcriber-error.js';
 
 /** Fetches the required {@linkcode TranscriberPayload} using the provided discord.js instance. */
 export class TranscriberFetcher {
@@ -33,6 +34,10 @@ export class TranscriberFetcher {
   }
 
   public async getMessages(channelId: Snowflake, limit: number = Infinity): Promise<APIMessage[]> {
+    if (limit <= 0) {
+      throw new TranscriberError('limit must be greater than 0.');
+    }
+
     const messages: APIMessage[] = [];
     const query = new URLSearchParams();
 
